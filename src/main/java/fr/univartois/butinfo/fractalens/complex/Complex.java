@@ -1,15 +1,22 @@
 package fr.univartois.butinfo.fractalens.complex;
 
-public class Complex implements IComplex{
+public class Complex implements IComplex {
+  private double RealPart;
+  private double ImaginaryPart;
+
+  public Complex(double ImaginaryPart, double nbImaginary){
+    this.RealPart = RealPart;
+    this.ImaginaryPart = ImaginaryPart;
+  }
 
   @Override
   public double getRealPart() {
-    return 0;
+    return RealPart;
   }
 
   @Override
   public double getImaginaryPart() {
-    return 0;
+    return ImaginaryPart;
   }
 
   @Override
