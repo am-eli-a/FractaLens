@@ -95,9 +95,10 @@ public class ComplexSequenceIterator implements Iterator<IComplex> {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
+		IComplex initial = sequence.computeNext(current);
 		current = sequence.computeNext(current);
 		nbIterations++;
-		return current;
+		return initial;
 	}
 
 }
