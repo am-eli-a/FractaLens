@@ -74,13 +74,12 @@ public class Complex implements IComplex {
       return false;
     }
     Complex other = (Complex) obj;
-    return Double.compare(realPart, other.realPart) == 0 && Double.compare(imaginaryPart, other.imaginaryPart) == 0;
+    return realPart == other.realPart && imaginaryPart == other.imaginaryPart;
   }
-
 
   @Override
   public int hashCode() {
-    return Objects.hash(realPart, imaginaryPart);
+    return Objects.hash(realPart + 0.0, imaginaryPart + 0.0);
   }
 
 }
