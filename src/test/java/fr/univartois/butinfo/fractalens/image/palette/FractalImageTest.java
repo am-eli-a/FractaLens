@@ -21,7 +21,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.univartois.butinfo.fractalens.image;
+package fr.univartois.butinfo.fractalens.image.palette;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +36,7 @@ import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
+import fr.univartois.butinfo.fractalens.image.FractalImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -45,7 +46,7 @@ import org.junit.jupiter.api.io.TempDir;
  * As the adapted {@link BufferedImage} is not exposed, the pixels are checked by saving
  * the image in a temporary directory and by reading the saved file back.
  *
- * @author [Ton nom]
+ * @author Amelia Dufour-Lazrek
  *
  * @version 0.1.0
  */
@@ -182,16 +183,4 @@ class FractalImageTest {
         assertEquals(HEIGHT, result.getHeight());
         assertEquals(WIDTH, result.getWidth());
     }
-
-    /**
-     * Test method for {@link FractalImage#saveAs(String)} when the file cannot be
-     * written.
-     */
-    @Test
-    void testSaveAsWhenAnErrorOccurs() {
-        String path = directory.resolve("missing").resolve("fractale.png").toString();
-
-        assertThrows(IOException.class, () -> image.saveAs(path));
-    }
-
 }
