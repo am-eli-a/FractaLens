@@ -8,24 +8,20 @@ import java.io.IOException;
 
 public class FractalImage implements IFractalImage {
 
-    private BufferedImage image;
-    private int height;
-    private int width;
+    private final BufferedImage image;
 
     public FractalImage(int height, int width) {
-        this.height = height;
-        this.width = width;
         this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return image.getHeight();
     }
 
     @Override
     public int getWidth() {
-        return  width;
+        return image.getWidth();
     }
 
     @Override
@@ -35,6 +31,8 @@ public class FractalImage implements IFractalImage {
 
     @Override
     public void saveAs(String path) throws IOException {
-        ImageIO.write(image, "jpg", new File(path));
+        if (!ImageIO.write(image, "png", new File(path))) {
+            throw new IOException("Impossible de sauvegarder");
+        }
     }
 }
