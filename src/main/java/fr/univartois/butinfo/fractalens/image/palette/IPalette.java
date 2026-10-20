@@ -15,5 +15,5 @@ public interface IPalette {
      * @throws IllegalArgumentException If the number of iterations is negative or
      *         greater than the maximum number of iterations.
      */
-    Color getCouleur(int nbIteration, int maxIteration);
+    Color getColor(int nbIteration, int maxIteration);
 }

@@ -139,7 +139,7 @@ public class FractalGenerator implements IFractalGenerator {
 		for (var _ : suite) {
 			counter++;
 		}
-		return palette.getCouleur(counter, nbMaxIteration);
+		return palette.getColor(counter, nbMaxIteration);
 	}
 
 	/*
