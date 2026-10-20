@@ -11,7 +11,7 @@ import java.awt.Color;
  *
  * @version 0.1.0
  */
-public class MasqueDecorator extends PaletteDecorator {
+public class MaskDecorator extends PaletteDecorator {
 
     /**
      * Whether the red component is kept.
@@ -36,7 +36,7 @@ public class MasqueDecorator extends PaletteDecorator {
      * @param green Whether the green component must be kept.
      * @param blue Whether the blue component must be kept.
      */
-    public MasqueDecorator(IPalette palette, boolean red, boolean green, boolean blue) {
+    public MaskDecorator(IPalette palette, boolean red, boolean green, boolean blue) {
         super(palette);
         this.red = red;
         this.green = green;
