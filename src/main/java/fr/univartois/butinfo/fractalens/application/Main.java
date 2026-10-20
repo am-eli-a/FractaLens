@@ -87,8 +87,8 @@ public class Main {
             fixedPalette, firstOutput);
 
     // Image 2 : c = 0.285 + 0.01i, centrée en -0.47 - 0.21i, cyan inversé
-    IPalette invertedCyan = new InversionDecorator(
-            new MaskDecorator(new GrayScale(), false, true, true));
+    IPalette invertedCyan = new MaskDecorator(
+            new InversionDecorator(new GrayScale()), false, true, true);
     generateFractal(new Complex(0.285, 0.01), new Complex(-0.47, -0.21),
             invertedCyan, secondOutput);
   }
