@@ -3,10 +3,8 @@ package fr.univartois.butinfo.fractalens.image;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 public class FractalImage implements IFractalImage {
 
