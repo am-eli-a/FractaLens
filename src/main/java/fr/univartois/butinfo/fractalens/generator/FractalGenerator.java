@@ -5,8 +5,9 @@ import fr.univartois.butinfo.fractalens.complex.IComplexPlane;
 import fr.univartois.butinfo.fractalens.complex.sequence.IComplexSequence;
 import fr.univartois.butinfo.fractalens.image.IFractalImage;
 
-import java.awt.Color;
-import java.util.Iterator;
+import java.awt.*;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.function.BiFunction;
 
 public class FractalGenerator implements IFractalGenerator{
@@ -40,11 +41,22 @@ public class FractalGenerator implements IFractalGenerator{
 
 	@Override
 	public IFractalImage generateImage() {
-		return null;
+		int height = image.getHeight();
+		int width = image.getWidth();
+		for (int row = 0 ; row < height; row++){
+			for (int column = 0 ; column < width ; column++){
+				Color color = computePixelColor(row, column);
+				 image.setColor(row, column, color);
+			}
+		} return image;
 	}
 
 	@Override
 	public void saveImage() {
-
+		try {
+			image.saveAs(filePath);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 }
