@@ -12,7 +12,10 @@ import fr.univartois.butinfo.fractalens.complex.sequence.IComplexSequence;
 import fr.univartois.butinfo.fractalens.complex.sequence.JuliaSequence;
 import fr.univartois.butinfo.fractalens.generator.FractalGenerator;
 import fr.univartois.butinfo.fractalens.generator.IFractalGenerator;
+import fr.univartois.butinfo.fractalens.image.BufferedImageAdapter;
 import fr.univartois.butinfo.fractalens.image.IFractalImage;
+import fr.univartois.butinfo.fractalens.image.palette.GrayScale;
+import fr.univartois.butinfo.fractalens.image.palette.IPalette;
 
 /**
  * Main class generating a Julia fractal image in grayscale.
@@ -53,16 +56,13 @@ public class Main {
     IComplexPlane plane = new ZoomDecorator(ZOOM, new ComplexPlane(HEIGHT, WIDTH));
 
     IComplex c = new Complex(C_REAL, C_IMAGINARY);
-    BiFunction<IComplex, Integer, IComplexSequence> sequence =
-            (z0, nbTerms) -> new JuliaSequence(z0, c, nbTerms);
+    BiFunction<IComplex, Integer, IComplexSequence> sequence = (z0, nbTerms) -> new JuliaSequence(z0, nbTerms, c);
 
-    IPalette palette = new GrayScalePalette();
+    IPalette palette = new GrayScale();
 
-    IFractalImage image = new BufferedImageAdapter(
-            new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB));
+    IFractalImage image = new BufferedImageAdapter(new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB));
 
-    IFractalGenerator generator =
-            new FractalGenerator(image, plane, MAX_ITERATIONS, palette, outputFile, sequence);
+    IFractalGenerator generator = new FractalGenerator(image, plane, MAX_ITERATIONS, palette, outputFile, sequence);
 
     generator.generateImage();
     generator.saveImage();
