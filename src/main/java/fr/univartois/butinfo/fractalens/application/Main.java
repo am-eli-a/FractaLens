@@ -56,9 +56,9 @@ public class Main {
     BiFunction<IComplex, Integer, IComplexSequence> sequence =
             (z0, nbTerms) -> new JuliaSequence(z0, c, nbTerms);
 
-    IPalette palette = new GrayScalePalette(); // À ADAPTER
+    IPalette palette = new GrayScalePalette();
 
-    IFractalImage image = new BufferedImageAdapter( // À ADAPTER
+    IFractalImage image = new BufferedImageAdapter(
             new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB));
 
     IFractalGenerator generator =
