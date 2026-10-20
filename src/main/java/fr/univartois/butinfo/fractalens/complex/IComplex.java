@@ -104,7 +104,7 @@ public interface IComplex {
     IComplex multiply(IComplex other);
 
     /**
-     * Divides this complex number by an other one.
+     * Divides this complex number by another one.
      *
      * @param other The complex number to divide this one by.
      *
