@@ -32,6 +32,7 @@ import fr.univartois.butinfo.fractalens.complex.IComplex;
 import fr.univartois.butinfo.fractalens.complex.IComplexPlane;
 import fr.univartois.butinfo.fractalens.complex.sequence.IComplexSequence;
 import fr.univartois.butinfo.fractalens.image.IFractalImage;
+import fr.univartois.butinfo.fractalens.image.palette.IPalette;
 
 /**
  * The FractalGenerator class generates the image of a fractal based on a sequence of
