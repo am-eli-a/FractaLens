@@ -6,6 +6,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * The FractalImage class is an adapter that allows to manipulate a
+ * {@link BufferedImage} through the {@link IFractalImage} interface.
+ * Pixels are designated by their row and column, whereas a {@link BufferedImage}
+ * uses (x, y) coordinates: this class takes care of the conversion.
+ *
+ * @author Amelia Dufour-Lazrek
+ *
+ * @version 0.1.0
+ */
 public class FractalImage implements IFractalImage {
 
     private final BufferedImage image;
