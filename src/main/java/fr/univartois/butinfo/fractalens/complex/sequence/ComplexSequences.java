@@ -23,8 +23,12 @@
 
 package fr.univartois.butinfo.fractalens.complex.sequence;
 
-import fr.univartois.butinfo.fractalens.complex.Complex;
 import fr.univartois.butinfo.fractalens.complex.IComplex;
+
+import java.util.function.BiFunction;
+
+
+import fr.univartois.butinfo.fractalens.complex.Complex;
 
 /**
  * The ComplexSequences class provides static factory methods for creating
@@ -39,9 +43,6 @@ import fr.univartois.butinfo.fractalens.complex.IComplex;
  * @version 0.1.0
  */
 public final class ComplexSequences {
-    /**
-     * Disables instantiation, since this class only contains static methods.
-     */
     private ComplexSequences() {}
 
     /**
@@ -102,5 +103,13 @@ public final class ComplexSequences {
                 },
                 z0,
                 maxIterations);
+    }
+
+    public static BiFunction<IComplex, Integer, IComplexSequence> mandelbrot() {
+        return (z0, max) -> new GenericComplexSequence((z, c) -> z.multiply(z).add(c), z0, max);
+    }
+
+    public static BiFunction<IComplex, Integer, IComplexSequence> multibrot(int p) {
+        return (z0, max) -> new GenericComplexSequence((z, c) -> z.power(p).add(c), z0, max);
     }
 }
