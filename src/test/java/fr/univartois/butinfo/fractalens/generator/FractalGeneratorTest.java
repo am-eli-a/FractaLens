@@ -175,8 +175,22 @@ class FractalGeneratorTest {
 	 */
 	private static FractalGenerator createGenerator(IFractalImage image,
 													BiFunction<IComplex, Integer, IComplexSequence> sequenceFactory) {
-		return new FractalGenerator(image, PLANE, MAX_ITERATIONS, PALETTE, "fractale.png",
-				sequenceFactory);
+		FractalGeneratorBuilder builder = new FractalGeneratorBuilder(){
+			@Override
+			public IFractalImage getImage (){
+				return image;
+			}
+
+			@Override
+			public IComplexPlane getPlane (){
+				return PLANE;
+			}
+		};
+		builder.usingSequence(sequenceFactory)
+				.withMaxIterations(MAX_ITERATIONS)
+				.coloredWith(PALETTE)
+				.savedAs("fractale.png");
+		return new FractalGenerator(builder);
 	}
 
 	/**
