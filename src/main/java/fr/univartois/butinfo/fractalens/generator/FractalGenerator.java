@@ -82,30 +82,20 @@ public class FractalGenerator implements IFractalGenerator {
 	private final BiFunction<IComplex, Integer, IComplexSequence> sequenceBiFunction;
 
 	/**
-	 * Creates a new FractalGenerator.
+	 * Creates a new FractalGenerator from the configuration given by a builder.
+	 * This constructor is not public: a generator can only be created by calling
+	 * {@link FractalGeneratorBuilder#build()}.
 	 *
-	 * @param image The image on which the fractal is drawn.
-	 * @param plane The complex plane used to associate a complex number with each pixel
-	 *        of the image.
-	 * @param nbMaxIteration The maximum number of iterations to perform on the sequence
-	 *        for each pixel.
-	 * @param palette The palette used to compute the color of a pixel from a number of
-	 *        iterations.
-	 * @param filePath The path of the file in which the generated image is saved.
-	 * @param sequenceBiFunction The function used to create the sequence to evaluate,
-	 *        from its first term and the maximum number of terms to compute.
+	 * @param builder The builder containing the configuration of the generator.
 	 */
-	public FractalGenerator(IFractalImage image, IComplexPlane plane, int nbMaxIteration,
-							IPalette palette, String filePath,
-							BiFunction<IComplex, Integer, IComplexSequence> sequenceBiFunction) {
-		this.image = image;
-		this.plane = plane;
-		this.nbMaxIteration = nbMaxIteration;
-		this.palette = palette;
-		this.filePath = filePath;
-		this.sequenceBiFunction = sequenceBiFunction;
+	FractalGenerator(FractalGeneratorBuilder builder){
+		this.image = builder.getImage();
+		this.palette = builder.getPalette();
+		this.nbMaxIteration = builder.getMaxIterations();
+		this.plane = builder.getPlane();
+		this.filePath = builder.getOutputFile();
+		this.sequenceBiFunction = builder.getSequenceFactory();
 	}
-
 	/*
 	 * (non-Javadoc)
 	 *
