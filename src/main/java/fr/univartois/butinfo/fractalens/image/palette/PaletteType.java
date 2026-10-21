@@ -3,11 +3,41 @@ package fr.univartois.butinfo.fractalens.image.palette;
 import java.awt.Color;
 import java.util.List;
 
+/**
+ * The PaletteType enumeration lists the palettes of colors that can be used to
+ * generate a fractal.
+ * Each constant is able to create a ready-to-use palette, with default colors.
+ * To use other colors, a palette can be created directly from its class instead.
+ *
+ * @author Amelia Dufour-Lazrek
+ *
+ * @version 0.1.0
+ */
 public enum PaletteType {
-    FIXED, GRADIENT, GRAYSCALE;
 
+    /**
+     * A {@link FixedPalette} going from white to black, through three shades of blue.
+     */
+    FIXED,
+
+    /**
+     * A {@link GradientPalette} going from dark green to black.
+     */
+    GRADIENT,
+
+    /**
+     * A {@link GrayScale} palette, going from white to black.
+     */
+    GRAYSCALE;
+
+    /**
+     * Creates the palette associated with this constant.
+     * A new palette is created at each call.
+     *
+     * @return The palette associated with this constant.
+     */
     public IPalette getPalette() {
-        return switch(this) {
+        return switch (this) {
             case FIXED -> new FixedPalette(List.of(
                     Color.WHITE,
                     new Color(150, 220, 255),
@@ -16,7 +46,6 @@ public enum PaletteType {
                     Color.BLACK));
 
             case GRADIENT -> new GradientPalette(new Color(10, 60, 30), Color.BLACK);
-
 
             case GRAYSCALE -> new GrayScale();
         };
