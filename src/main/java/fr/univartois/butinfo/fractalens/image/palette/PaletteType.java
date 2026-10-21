@@ -14,7 +14,9 @@ public enum PaletteType {
                     new Color(30, 120, 220),
                     new Color(10, 30, 90),
                     Color.BLACK));
+
             case GRADIENT -> new GradientPalette(new Color(10, 60, 30), Color.BLACK);
+
             case GRAYSCALE -> new GrayScale();
         };
     }
