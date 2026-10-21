@@ -112,4 +112,5 @@ public interface IComplex {
      */
     IComplex divide(IComplex other);
 
+    IComplex power(int p);
 }
