@@ -1,73 +1,30 @@
 package fr.univartois.butinfo.fractalens.application;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.function.BiFunction;
-
 import fr.univartois.butinfo.fractalens.complex.Complex;
-import fr.univartois.butinfo.fractalens.complex.ComplexPlane;
 import fr.univartois.butinfo.fractalens.complex.IComplex;
-import fr.univartois.butinfo.fractalens.complex.IComplexPlane;
-import fr.univartois.butinfo.fractalens.complex.TranslationDecorator;
-import fr.univartois.butinfo.fractalens.complex.ZoomDecorator;
 import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequences;
-import fr.univartois.butinfo.fractalens.complex.sequence.IComplexSequence;
-import fr.univartois.butinfo.fractalens.generator.FractalGenerator;
+import fr.univartois.butinfo.fractalens.generator.FractalGeneratorBuilder;
 import fr.univartois.butinfo.fractalens.generator.IFractalGenerator;
-import fr.univartois.butinfo.fractalens.image.BufferedImageAdapter;
-import fr.univartois.butinfo.fractalens.image.IFractalImage;
 import fr.univartois.butinfo.fractalens.image.palette.FixedPalette;
 import fr.univartois.butinfo.fractalens.image.palette.IPalette;
 
+import java.awt.Color;
+import java.util.List;
+
 /**
- * The Main class generates the demonstration images of Sprint 4: a Mandelbrot
- * fractal, a Burning Ship fractal and a fractal defined by a free formula.
- * Each image has its own size, zoom, maximum number of iterations, sequence,
- * center and palette.
+ * The Main class generates three fractal images using the fractal generator
+ * builder: a Mandelbrot fractal, a Burning Ship fractal and a fractal defined by
+ * a free formula (z³ + z² + c).
+ * Each image is described by a chain of calls on the builder, which configures its
+ * sequence, size, zoom, center, maximum number of iterations, palette and output file.
  *
  * @author Nathan Salomé
  * @author Matty Fourmestraux
  * @author Baptiste Wagee
  *
- * @version 0.3.0
+ * @version 0.4.0
  */
 public class Main {
-
-  /**
-   * The origin of the complex plane, used as the first term of the Burning Ship
-   * sequence.
-   */
-  private static final IComplex ORIGIN = new Complex(0, 0);
-
-  /**
-   * Generates an image of a fractal and saves it in a file.
-   *
-   * @param width         The width of the image (in pixels).
-   * @param height        The height of the image (in pixels).
-   * @param zoom          The zoom factor applied on the complex plane.
-   * @param maxIterations The maximum number of iterations.
-   * @param sequence      The function creating the sequence to evaluate, from its
-   *                      first term and its maximum number of terms.
-   * @param center        The complex number at the center of the image.
-   * @param palette       The palette used to color the image.
-   * @param outputFile    The name of the file in which to save the image.
-   */
-  private static void generateFractal(int width, int height, double zoom, int maxIterations,
-                                      BiFunction<IComplex, Integer, IComplexSequence> sequence,
-                                      IComplex center, IPalette palette, String outputFile) {
-    IComplexPlane planeZoom = new ZoomDecorator(zoom, new ComplexPlane(height, width));
-    IComplexPlane planeTranslate = new TranslationDecorator(center, planeZoom);
-
-    IFractalImage image = new BufferedImageAdapter(
-            new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB));
-
-    IFractalGenerator generator = new FractalGenerator(image, planeTranslate,
-            maxIterations, palette, outputFile, sequence);
-
-    generator.generateImage();
-    generator.saveImage();
-  }
 
   /**
    * Generates the three demonstration images and saves them.
@@ -92,20 +49,43 @@ public class Main {
             new Color(230, 255, 200), new Color(140, 210, 90), new Color(40, 140, 60),
             new Color(10, 60, 30), Color.BLACK));
 
-    // Image 1: Mandelbrot set
-    generateFractal(800, 600, 0.001, 250,
-            (z0, nbTerms) -> ComplexSequences.mandelbrot(z0, nbTerms),
-            new Complex(-0.75, 0), firePalette, firstOutput);
+    IFractalGenerator mandelbrot = new FractalGeneratorBuilder()
+            .usingSequence(ComplexSequences::mandelbrot)
+            .withSize(800, 600)
+            .zoomedBy(0.001)
+            .centeredAt(new Complex(-0.75, 0))
+            .withMaxIterations(250)
+            .coloredWith(firePalette)
+            .savedAs(firstOutput)
+            .build();
+    mandelbrot.generateImage();
+    mandelbrot.saveImage();
 
-    // Image 2: Burning Ship, Mandelbrot-style (first term = 0, c = current point)
-    generateFractal(800, 800, 0.0001, 250,
-            (z0, nbTerms) -> ComplexSequences.burningShip(ORIGIN, nbTerms, z0),
-            new Complex(-1.755, -0.03), icePalette, secondOutput);
+    IComplex burningShipConstant = new Complex(-0.4, 0.6);
+    IFractalGenerator burningShip = new FractalGeneratorBuilder()
+            .usingSequence((z0, max) -> ComplexSequences.burningShip(z0, max, burningShipConstant))
+            .withSize(800, 800)
+            .zoomedBy(0.0001)
+            .centeredAt(new Complex(-1.755, -0.03))
+            .withMaxIterations(64)
+            .coloredWith(icePalette)
+            .savedAs(secondOutput)
+            .build();
+    burningShip.generateImage();
+    burningShip.saveImage();
 
-    // Image 3: free sequence z^3 + z^2 + c, with a fixed c
-    generateFractal(800, 800, 0.004, 100,
-            (z0, nbTerms) -> ComplexSequences.cubicJulia(z0, nbTerms, new Complex(-0.4, 0.6)),
-            new Complex(0, 0), forestPalette, thirdOutput);
+    IComplex cubicConstant = new Complex(0.3, 0.5);
+    IFractalGenerator cubicJulia = new FractalGeneratorBuilder()
+            .usingSequence((z0, max) -> ComplexSequences.cubicJulia(z0, max, cubicConstant))
+            .withSize(800, 800)
+            .zoomedBy(0.003)
+            .centeredAt(new Complex(0, 0))
+            .withMaxIterations(150)
+            .coloredWith(forestPalette)
+            .savedAs(thirdOutput)
+            .build();
+    cubicJulia.generateImage();
+    cubicJulia.saveImage();
   }
 
 }
