@@ -162,6 +162,19 @@ class ComplexSequencesTest {
     IComplex result = sequence.computeNext(new Complex(1, 0));
     assertEquals(new Complex(2, 0), result);
   }
+  /**
+   * Test method for {@link ComplexSequences#tricorn(IComplex, int, IComplex)}:
+   * conj(1 + i)^2 + 0 = (1 - i)^2 = -2i.
+   * With Julia's sequence, the result would be 2i, which shows that the
+   * conjugate is taken.
+   */
+  @Test
+  void testTricorn() {
+    IComplex c = new Complex(0, 0);
+    IComplexSequence sequence = ComplexSequences.tricorn(Z0, MAX_ITERATIONS, c);
+
+    assertEquals(new Complex(0, -2), sequence.computeNext(new Complex(1, 1)));
+  }
 
   @Test
   void testCubicJuliaComputeNextFromI() {
@@ -271,4 +284,27 @@ class ComplexSequencesTest {
 
 
 
+  @Test
+  void testTricornWithConstant() {
+    IComplexSequence sequence = ComplexSequences.tricorn(Z0, MAX_ITERATIONS, new Complex(1, 0));
+
+    assertEquals(new Complex(1, -2), sequence.computeNext(new Complex(1, 1)));
+  }
+
+  @Test
+  void testTricornGeneralWithPowerTwoIsTricorn() {
+    IComplex c = new Complex(0.5, 0.5);
+    IComplex previous = new Complex(1, 1);
+    IComplexSequence tricornGeneral = ComplexSequences.tricornGeneral(Z0, MAX_ITERATIONS, c, 2);
+    IComplexSequence tricorn = ComplexSequences.tricorn(Z0, MAX_ITERATIONS, c);
+
+    assertEquals(tricorn.computeNext(previous), tricornGeneral.computeNext(previous));
+  }
+
+  @Test
+  void testTricornGeneralWithPowerThree() {
+    IComplexSequence sequence = ComplexSequences.tricornGeneral(Z0, MAX_ITERATIONS, new Complex(0, 0), 3);
+
+    assertEquals(new Complex(-2, -2), sequence.computeNext(new Complex(1, 1)));
+  }
 }
