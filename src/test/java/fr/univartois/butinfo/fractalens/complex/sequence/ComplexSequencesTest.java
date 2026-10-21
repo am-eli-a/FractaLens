@@ -149,4 +149,6 @@ class ComplexSequencesTest {
     assertTrue(nbIterations < MAX_ITERATIONS);
   }
 
+  
+
 }
