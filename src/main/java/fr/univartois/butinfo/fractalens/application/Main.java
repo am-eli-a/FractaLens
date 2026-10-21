@@ -2,6 +2,7 @@ package fr.univartois.butinfo.fractalens.application;
 
 import fr.univartois.butinfo.fractalens.complex.Complex;
 import fr.univartois.butinfo.fractalens.complex.IComplex;
+import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequenceType;
 import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequences;
 import fr.univartois.butinfo.fractalens.generator.FractalGeneratorBuilder;
 import fr.univartois.butinfo.fractalens.generator.IFractalGenerator;
@@ -46,11 +47,11 @@ public class Main {
             new Color(10, 30, 90), Color.BLACK));
 
     IPalette forestPalette = new FixedPalette(List.of(
-            new Color(230, 255, 200), new Color(140, 210, 90), new Color(40, 140, 60),
-            new Color(10, 60, 30), Color.BLACK));
+            new Color(5, 20, 10), new Color(20, 90, 40), new Color(120, 200, 80),
+            new Color(230, 255, 200), Color.BLACK));
 
     IFractalGenerator mandelbrot = new FractalGeneratorBuilder()
-            .usingSequence(ComplexSequences::mandelbrot)
+            .usingSequence(ComplexSequenceType.MANDELBROT)
             .withSize(800, 600)
             .zoomedBy(0.001)
             .centeredAt(new Complex(-0.75, 0))
@@ -61,12 +62,12 @@ public class Main {
     mandelbrot.generateImage();
     mandelbrot.saveImage();
 
-    IComplex burningShipConstant = new Complex(-0.4, 0.6);
+    IComplex burningShipConstant = new Complex(-1.6, -0.1);
     IFractalGenerator burningShip = new FractalGeneratorBuilder()
             .usingSequence((z0, max) -> ComplexSequences.burningShip(z0, max, burningShipConstant))
             .withSize(800, 800)
-            .zoomedBy(0.0001)
-            .centeredAt(new Complex(-1.755, -0.03))
+            .zoomedBy(0.0015)
+            .centeredAt(new Complex(0, 0))
             .withMaxIterations(64)
             .coloredWith(icePalette)
             .savedAs(secondOutput)
@@ -74,13 +75,14 @@ public class Main {
     burningShip.generateImage();
     burningShip.saveImage();
 
-    IComplex cubicConstant = new Complex(0.3, 0.5);
+
+    IComplex cubicConstant = new Complex(-0.2, 0.75);
     IFractalGenerator cubicJulia = new FractalGeneratorBuilder()
             .usingSequence((z0, max) -> ComplexSequences.cubicJulia(z0, max, cubicConstant))
             .withSize(800, 800)
-            .zoomedBy(0.003)
-            .centeredAt(new Complex(0, 0))
-            .withMaxIterations(150)
+            .zoomedBy(0.0032)
+            .centeredAt(new Complex(-0.25, 0))
+            .withMaxIterations(40)
             .coloredWith(forestPalette)
             .savedAs(thirdOutput)
             .build();
