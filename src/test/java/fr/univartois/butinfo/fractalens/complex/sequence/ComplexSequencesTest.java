@@ -163,7 +163,6 @@ class ComplexSequencesTest {
     assertEquals(new Complex(0, -2), sequence.computeNext(new Complex(1, 1)));
   }
 
-
   @Test
   void testTricornWithConstant() {
     IComplexSequence sequence = ComplexSequences.tricorn(Z0, MAX_ITERATIONS, new Complex(1, 0));
@@ -187,5 +186,4 @@ class ComplexSequencesTest {
 
     assertEquals(new Complex(-2, -2), sequence.computeNext(new Complex(1, 1)));
   }
-
 }
