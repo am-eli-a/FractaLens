@@ -307,4 +307,159 @@ class ComplexSequencesTest {
 
     assertEquals(new Complex(-2, -2), sequence.computeNext(new Complex(1, 1)));
   }
+
+  /**
+   * Test method for {@link ComplexSequences#mandelbrot(IComplex, int)} on a real
+   * number: 2^2 + 1 = 5.
+   */
+  @Test
+  void testMandelbrotOnRealNumber() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(1, 0), MAX_ITERATIONS);
+
+    assertEquals(new Complex(5, 0), sequence.computeNext(new Complex(2, 0)));
+  }
+
+  /**
+   * Test method for {@link ComplexSequences#mandelbrot(IComplex, int)} on a complex
+   * number: (1 + i)^2 + 1 = 2i + 1 = 1 + 2i.
+   */
+  @Test
+  void testMandelbrotOnComplexNumber() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(1, 0), MAX_ITERATIONS);
+
+    assertEquals(new Complex(1, 2), sequence.computeNext(new Complex(1, 1)));
+  }
+
+  /**
+   * Test method for {@link ComplexSequences#mandelbrot(IComplex, int)} when the
+   * previous term is 0: the next term is then the first term z0 (and not a constant
+   * given separately, as in Julia's sequence).
+   */
+  @Test
+  void testMandelbrotComputeNextFromZero() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(1, 1), MAX_ITERATIONS);
+
+    assertEquals(new Complex(1, 1), sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for the iterator of a sequence created by
+   * {@link ComplexSequences#mandelbrot(IComplex, int)} when the sequence converges
+   * (z0 = 0 stays at 0): all the terms must be computed.
+   */
+  @Test
+  void testMandelbrotIteratorOnConvergence() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(0, 0), MAX_ITERATIONS);
+    int nbIterations = 0;
+
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+
+    assertEquals(MAX_ITERATIONS, nbIterations);
+  }
+
+  /**
+   * Test method for the iterator of a sequence created by
+   * {@link ComplexSequences#mandelbrot(IComplex, int)} with z0 = -1, which alternates
+   * between -1 and 0 and never diverges.
+   */
+  @Test
+  void testMandelbrotIteratorOnPeriodicPoint() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(-1, 0), MAX_ITERATIONS);
+    int nbIterations = 0;
+
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+
+    assertEquals(MAX_ITERATIONS, nbIterations);
+  }
+
+  /**
+   * Test method for the iterator of a sequence created by
+   * {@link ComplexSequences#mandelbrot(IComplex, int)} when the sequence diverges:
+   * z0 = 2 gives 2^2 + 2 = 6, whose modulus is greater than 2, after one iteration.
+   */
+  @Test
+  void testMandelbrotIteratorOnDivergence() {
+    IComplexSequence sequence = ComplexSequences.mandelbrot(new Complex(2, 0), MAX_ITERATIONS);
+    int nbIterations = 0;
+
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+
+    assertEquals(1, nbIterations);
+  }
+
+  /**
+   * Test method for {@link ComplexSequences#multibrot(IComplex, int, int)} on a real
+   * number: 2^3 + 1 = 9.
+   */
+  @Test
+  void testMultibrotOnRealNumber() {
+    IComplexSequence sequence = ComplexSequences.multibrot(new Complex(1, 0), MAX_ITERATIONS, 3);
+
+    assertEquals(new Complex(9, 0), sequence.computeNext(new Complex(2, 0)));
+  }
+
+  /**
+   * Test method for {@link ComplexSequences#multibrot(IComplex, int, int)} on an
+   * imaginary number: i^3 + 1 = -i + 1 = 1 - i.
+   */
+  @Test
+  void testMultibrotOnImaginaryNumber() {
+    IComplexSequence sequence = ComplexSequences.multibrot(new Complex(1, 0), MAX_ITERATIONS, 3);
+
+    assertEquals(new Complex(1, -1), sequence.computeNext(new Complex(0, 1)));
+  }
+
+  /**
+   * Test method for {@link ComplexSequences#multibrot(IComplex, int, int)} with a
+   * power of 2: the result must be the same as the Mandelbrot sequence.
+   */
+  @Test
+  void testMultibrotWithPowerTwoIsMandelbrot() {
+    IComplex z0 = new Complex(0.5, 0.5);
+    IComplex previous = new Complex(1, 1);
+    IComplexSequence multibrot = ComplexSequences.multibrot(z0, MAX_ITERATIONS, 2);
+    IComplexSequence mandelbrot = ComplexSequences.mandelbrot(z0, MAX_ITERATIONS);
+
+    assertEquals(mandelbrot.computeNext(previous), multibrot.computeNext(previous));
+  }
+
+  /**
+   * Test method for the iterator of a sequence created by
+   * {@link ComplexSequences#multibrot(IComplex, int, int)} when the sequence converges.
+   */
+  @Test
+  void testMultibrotIteratorOnConvergence() {
+    IComplexSequence sequence = ComplexSequences.multibrot(new Complex(0, 0), MAX_ITERATIONS, 3);
+    int nbIterations = 0;
+
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+
+    assertEquals(MAX_ITERATIONS, nbIterations);
+  }
+
+  /**
+   * Test method for the iterator of a sequence created by
+   * {@link ComplexSequences#multibrot(IComplex, int, int)} when the sequence diverges:
+   * z0 = 2 gives 2^3 + 2 = 10, whose modulus is greater than 2, after one iteration.
+   */
+  @Test
+  void testMultibrotIteratorOnDivergence() {
+    IComplexSequence sequence = ComplexSequences.multibrot(new Complex(2, 0), MAX_ITERATIONS, 3);
+    int nbIterations = 0;
+
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+
+    assertEquals(1, nbIterations);
+  }
+
 }

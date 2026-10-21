@@ -3,8 +3,6 @@ package fr.univartois.butinfo.fractalens.complex.sequence;
 import fr.univartois.butinfo.fractalens.complex.Complex;
 import fr.univartois.butinfo.fractalens.complex.IComplex;
 
-import java.util.function.BiFunction;
-
 public final class ComplexSequences {
     private ComplexSequences() {
     }
@@ -37,12 +35,21 @@ public final class ComplexSequences {
                 maxIterations);
     }
 
-    public static BiFunction<IComplex, Integer, IComplexSequence> mandelbrot() {
-        return (z0, max) -> new GenericComplexSequence((z, c) -> z.multiply(z).add(c), z0, max);
+    public static IComplexSequence mandelbrot(IComplex z0, int maxIterations) {
+        return new GenericComplexSequence(
+                (z, first) -> z.multiply(z).add(first),
+                z0,
+                maxIterations);
     }
 
-    public static BiFunction<IComplex, Integer, IComplexSequence> multibrot(int p) {
-        return (z0, max) -> new GenericComplexSequence((z, c) -> z.power(p).add(c), z0, max);
+    public static IComplexSequence multibrot(IComplex z0, int maxIterations, int p) {
+        if (p<0) {
+            throw new IllegalArgumentException("p must be >= 0");
+        }
+        return new GenericComplexSequence(
+                (z, first) -> z.power(p).add(first),
+                z0,
+                maxIterations);
     }
 
     public static IComplexSequence tricorn(IComplex z0, int maxIterations, IComplex c) {
