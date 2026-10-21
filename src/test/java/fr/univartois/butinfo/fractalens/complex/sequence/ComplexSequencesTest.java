@@ -149,6 +149,126 @@ class ComplexSequencesTest {
     assertTrue(nbIterations < MAX_ITERATIONS);
   }
 
-  
+  @Test
+  void testCubicJuliaComputeNextFromZero(){
+    IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0,1), MAX_ITERATIONS, new Complex(1, 1));
+    IComplex result = sequence.computeNext(new Complex(0,0));
+    assertEquals(new Complex(1,1), result);
+  }
+
+  @Test
+  void testCubicJuliaComputeNextFromOne() {
+    IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), MAX_ITERATIONS, new Complex(0, 0));
+    IComplex result = sequence.computeNext(new Complex(1, 0));
+    assertEquals(new Complex(2, 0), result);
+  }
+
+  @Test
+  void testCubicJuliaComputeNextFromI() {
+    IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), MAX_ITERATIONS, new Complex(0, 0));
+    IComplex result = sequence.computeNext(new Complex(0, 1));
+    assertEquals(new Complex(-1, -1), result);
+  }
+
+  @Test
+  void testCubicJuliaOnDivergence() {
+    IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(2, 0), 50, new Complex(0, 0));
+    int nbIterations = 0;
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+    assertTrue(nbIterations < 50);
+  }
+
+  @Test
+  void testCubicJuliaOnConvergence() {
+    IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), 50, new Complex(0, 0));
+    int nbIterations = 0;
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+    assertEquals(50, nbIterations);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, when the
+   * first term is 0 (c × z0 = 0, so the next term is only previous²).
+   */
+  @Test
+  void testMixedJuliaMandelbrotWithZeroFirstTerm() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(0, 0), MAX_ITERATIONS, new Complex(1, 1));
+    IComplex result = sequence.computeNext(new Complex(1, 0));
+    assertEquals(new Complex(1, 0), result);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, when the
+   * previous term is 0 (the next term is then c × z0).
+   */
+  @Test
+  void testMixedJuliaMandelbrotComputeNextFromZero() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(1, 0), MAX_ITERATIONS, new Complex(1, 1));
+    IComplex result = sequence.computeNext(new Complex(0, 0));
+    assertEquals(new Complex(1, 1), result);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, checking the
+   * order of the operations: 1² + 1 × 2 = 3, whereas (1² + 1) × 2 would give 4.
+   */
+  @Test
+  void testMixedJuliaMandelbrotOrderOfOperations() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(2, 0), MAX_ITERATIONS, new Complex(1, 0));
+    IComplex result = sequence.computeNext(new Complex(1, 0));
+    assertEquals(new Complex(3, 0), result);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, with
+   * imaginary numbers: 0² + i × i = -1.
+   */
+  @Test
+  void testMixedJuliaMandelbrotWithImaginaryNumbers() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(0, 1), MAX_ITERATIONS, new Complex(0, 1));
+    IComplex result = sequence.computeNext(new Complex(0, 0));
+    assertEquals(new Complex(-1, 0), result);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, when the
+   * sequence diverges (2² + 1 × 2 = 6, whose modulus is greater than 2).
+   */
+  @Test
+  void testMixedJuliaMandelbrotOnDivergence() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(2, 0), 50, new Complex(1, 0));
+    int nbIterations = 0;
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+    assertTrue(nbIterations < 50);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#mixedJuliaMandelbrot(IComplex, int, IComplex)}, when the
+   * sequence converges (z0 = 0, so c × z0 = 0 and the sequence stays at 0).
+   */
+  @Test
+  void testMixedJuliaMandelbrotOnConvergence() {
+    IComplexSequence sequence = ComplexSequences.mixedJuliaMandelbrot(new Complex(0, 0), 50, new Complex(1, 1));
+    int nbIterations = 0;
+    for (var _ : sequence) {
+      nbIterations++;
+    }
+    assertEquals(50, nbIterations);
+  }
+
+
+
 
 }

@@ -34,4 +34,11 @@ public final class ComplexSequences {
                 z0,
                 maxIterations);
     }
+
+    public static IComplexSequence mixedJuliaMandelbrot(IComplex z0, int maxIterations, IComplex c){
+        return new GenericComplexSequence(
+                (previous, first) -> previous.power(2).add(c.multiply(first)), z0, maxIterations);
+    }
+
+
 }
