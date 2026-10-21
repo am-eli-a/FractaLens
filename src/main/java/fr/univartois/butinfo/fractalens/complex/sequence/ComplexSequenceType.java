@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 public enum ComplexSequenceType {
   JULIA((z0, max) -> new JuliaSequence(z0, max, new Complex(-0.4, 0.6))),
 
-  MANDELBROT((z0, max) -> ComplexSequences.mandelbrot(z0, max)),
+  MANDELBROT(ComplexSequences::mandelbrot),
 
   BURNING_SHIP((z0, max) -> ComplexSequences.burningShip(z0, max, new Complex(-0.4, 0.6))),
 
