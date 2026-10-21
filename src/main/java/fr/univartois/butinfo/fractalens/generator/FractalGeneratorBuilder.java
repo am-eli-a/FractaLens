@@ -1,7 +1,3 @@
-/*
- * (même bloc de licence que dans les autres fichiers)
- */
-
 package fr.univartois.butinfo.fractalens.generator;
 
 import java.awt.image.BufferedImage;
