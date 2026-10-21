@@ -145,4 +145,13 @@ public class Complex implements IComplex {
     return Objects.hash(realPart + 0.0, imaginaryPart + 0.0);
   }
 
+
+  @Override
+  public IComplex power(int p){
+    IComplex result = new Complex(1,0);
+    for (int i = 0; i < p; i++) {
+      result = result.multiply(this); // Complex Z
+    }
+    return result;
+  }
 }
