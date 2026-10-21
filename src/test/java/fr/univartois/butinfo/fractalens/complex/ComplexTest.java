@@ -333,4 +333,23 @@ class ComplexTest {
         assertEquals("2.0 + 2.0i", z.toString());
     }
 
+    @Test
+    void testPower() {
+        IComplex complex = createComplex(2, 2);
+
+        IComplex powerZero = complex.power(0);
+        assertEquals(createComplex(1, 0), powerZero);
+
+        IComplex powerOne = complex.power(1);
+        assertEquals(createComplex(2, 2), powerOne);
+
+        IComplex powerTwo = complex.power(2);
+        assertEquals(createComplex(0, 8), powerTwo);
+
+        IComplex powerThree = complex.power(3);
+        assertEquals(createComplex(-16, 16), powerThree);
+
+
+    }
+
 }
