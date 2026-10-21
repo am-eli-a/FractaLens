@@ -8,12 +8,15 @@ import fr.univartois.butinfo.fractalens.complex.ZoomDecorator;
 import fr.univartois.butinfo.fractalens.complex.IComplex;
 import fr.univartois.butinfo.fractalens.complex.ComplexPlane;
 import fr.univartois.butinfo.fractalens.complex.TranslationDecorator;
+import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequenceType;
 import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequences;
 import fr.univartois.butinfo.fractalens.complex.sequence.IComplexSequence;
 import fr.univartois.butinfo.fractalens.image.BufferedImageAdapter;
 import fr.univartois.butinfo.fractalens.image.IFractalImage;
 import fr.univartois.butinfo.fractalens.image.palette.GrayScale;
 import fr.univartois.butinfo.fractalens.image.palette.IPalette;
+import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequenceType;
+import fr.univartois.butinfo.fractalens.image.palette.PaletteType;
 
 public class FractalGeneratorBuilder {
 
@@ -51,6 +54,11 @@ public class FractalGeneratorBuilder {
     return this;
   }
 
+  public FractalGeneratorBuilder usingSequence(ComplexSequenceType sequenceType) {
+    this.sequenceFactory = sequenceType.getSequenceFactory();
+    return this;
+  }
+
   public FractalGeneratorBuilder withSize(int width, int height) {
     this.width = width;
     this.height = height;
@@ -74,6 +82,11 @@ public class FractalGeneratorBuilder {
 
   public FractalGeneratorBuilder coloredWith(IPalette palette) {
     this.palette = palette;
+    return this;
+  }
+
+  public FractalGeneratorBuilder coloredWith(PaletteType paletteType) {
+    this.palette = paletteType.getPalette();
     return this;
   }
 
@@ -107,8 +120,7 @@ public class FractalGeneratorBuilder {
   }
 
   public FractalGenerator build() {
-    // TODO return new FractalGenerator(this); quand le constructeur de Racer existera
-    return null;
+    return new FractalGenerator(this);
   }
 
 }
