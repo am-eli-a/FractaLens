@@ -35,6 +35,12 @@ import fr.univartois.butinfo.fractalens.image.palette.IPalette;
 public class Main {
 
   /**
+   * The origin of the complex plane, used as the first term of the Burning Ship
+   * sequence.
+   */
+  private static final IComplex ORIGIN = new Complex(0, 0);
+
+  /**
    * Generates an image of a fractal and saves it in a file.
    *
    * @param width         The width of the image (in pixels).
@@ -75,23 +81,31 @@ public class Main {
     String secondOutput = (args.length > 1) ? args[1] : "fractal2.png";
     String thirdOutput = (args.length > 2) ? args[2] : "fractal3.png";
 
-    IPalette fixedPalette = new FixedPalette(List.of(
+    IPalette firePalette = new FixedPalette(List.of(
             new Color(255, 255, 220), Color.YELLOW, Color.ORANGE, Color.RED, Color.BLACK));
 
-    // Image 1 : Mandelbrot
+    IPalette icePalette = new FixedPalette(List.of(
+            Color.WHITE, new Color(150, 220, 255), new Color(30, 120, 220),
+            new Color(10, 30, 90), Color.BLACK));
+
+    IPalette forestPalette = new FixedPalette(List.of(
+            new Color(230, 255, 200), new Color(140, 210, 90), new Color(40, 140, 60),
+            new Color(10, 60, 30), Color.BLACK));
+
+    // Image 1: Mandelbrot set
     generateFractal(800, 600, 0.001, 250,
             (z0, nbTerms) -> ComplexSequences.mandelbrot(z0, nbTerms),
-            new Complex(-0.75, 0), fixedPalette, firstOutput);
+            new Complex(-0.75, 0), firePalette, firstOutput);
 
-    // Image 2 : Burning Ship
-    generateFractal(800, 800, 0.0001, 64,
-            (z0, nbTerms) -> ComplexSequences.burningShip(z0, nbTerms, new Complex(-0.4, 0.6)),
-            new Complex(-1.755, -0.03), fixedPalette, secondOutput);
+    // Image 2: Burning Ship, Mandelbrot-style (first term = 0, c = current point)
+    generateFractal(800, 800, 0.0001, 250,
+            (z0, nbTerms) -> ComplexSequences.burningShip(ORIGIN, nbTerms, z0),
+            new Complex(-1.755, -0.03), icePalette, secondOutput);
 
-    // Image 3 : suite libre (z³ + z² + c)
+    // Image 3: free sequence z^3 + z^2 + c, with a fixed c
     generateFractal(800, 800, 0.004, 100,
             (z0, nbTerms) -> ComplexSequences.cubicJulia(z0, nbTerms, new Complex(-0.4, 0.6)),
-            new Complex(0, 0), fixedPalette, thirdOutput);
+            new Complex(0, 0), forestPalette, thirdOutput);
   }
 
 }
