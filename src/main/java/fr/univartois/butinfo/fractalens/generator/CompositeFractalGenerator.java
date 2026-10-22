@@ -48,7 +48,7 @@ public class CompositeFractalGenerator implements IFractalGenerator {
     animatedGif.start(outputFile);
     animatedGif.setDelay(delay);
     animatedGif.setRepeat(0);
-    animatedGif.setQuality(10); // if number small, more quality but take more time
+    animatedGif.setQuality(5); // if number small, more quality but take more time
 
      for ( BufferedImage image : images){
        animatedGif.addFrame(image);
