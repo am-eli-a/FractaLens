@@ -65,5 +65,9 @@ public final class ComplexSequences {
                 (previous, first) -> previous.power(2).add(c.multiply(first)), z0, maxIterations);
     }
 
-
+    public static IComplexSequence rotatedMultiJulia(IComplex z0, int maxIterations, IComplex c, double theta, int p) {
+        IComplex rotated = new Complex(Math.cos(theta), Math.sin(theta));
+        IComplex cRotated = c.multiply(rotated);
+        return multiJulia(z0, maxIterations, cRotated, p);
+    }
 }
