@@ -1,6 +1,8 @@
 package fr.univartois.butinfo.fractalens.generator;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import fr.univartois.butinfo.fractalens.complex.Complex;
@@ -71,6 +73,12 @@ public class FractalGeneratorBuilder {
    */
   private static final IPalette DEFAULT_PALETTE = new GrayScale();
 
+  private static final int DEFAULT_FRAME_COUNT = 1;
+
+  private static final double DEFAULT_ZOOM_FACTOR = 1.0;
+
+  private static final int DEFAULT_FRAME_DELAY = 100;
+
   /**
    * The default function creating the sequence to evaluate (Mandelbrot's sequence).
    */
@@ -118,6 +126,13 @@ public class FractalGeneratorBuilder {
    */
   private String outputFile;
 
+  private int frameCount;
+
+  private double zoomFactor;
+
+  private int frameDelay;
+
+
   /**
    * Creates a new FractalGeneratorBuilder, initialized with the default values.
    */
@@ -130,8 +145,21 @@ public class FractalGeneratorBuilder {
     this.center = DEFAULT_CENTER;
     this.palette = DEFAULT_PALETTE;
     this.sequenceFactory = DEFAULT_SEQUENCE;
+    this.frameDelay = DEFAULT_FRAME_DELAY;
+    this.zoomFactor = DEFAULT_ZOOM_FACTOR;
+    this.frameCount = DEFAULT_FRAME_COUNT;
   }
 
+  public FractalGeneratorBuilder animatedWithZoom(double factor, int frames){
+    this.zoomFactor = factor;
+    this.frameCount = frames;
+    return this;
+  }
+
+  public FractalGeneratorBuilder withFrameDelay(int delay){
+    this.frameDelay=delay;
+    return this;
+  }
   /**
    * Sets the sequence to evaluate, given as a function.
    *
@@ -306,8 +334,19 @@ public class FractalGeneratorBuilder {
    *
    * @return The created generator.
    */
-  public FractalGenerator build() {
-    return new FractalGenerator(this);
-  }
+  public IFractalGenerator build() {
+    if (frameCount == 1) {
+      return new FractalGenerator(this);
+    }
 
-}
+    double initialZoom = zoom;
+    List<IFractalGenerator> generators = new ArrayList<>();
+
+    for (int k = 0; k < frameCount; k++) {
+      zoom = initialZoom * Math.pow(zoomFactor, k);
+      generators.add(new FractalGenerator(this));
+    }
+
+    zoom = initialZoom;
+    return new CompositeFractalGenerator(generators, frameDelay, outputFile);
+  }
