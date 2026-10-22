@@ -146,6 +146,91 @@ class FractalGeneratorBuilderTest {
   }
 
   /**
+   * Tests that a single generator is built when no animation is requested.
+   */
+  @Test
+  void testBuildWithoutAnimationCreatesASingleGenerator() {
+    assertInstanceOf(FractalGenerator.class, new FractalGeneratorBuilder().build());
+  }
+
+  /**
+   * Tests that a composite is built when an animation is requested.
+   */
+  @Test
+  void testBuildWithAnimationCreatesAComposite() {
+    IFractalGenerator generator = new FractalGeneratorBuilder()
+            .animatedWithZoom(0.5, 3)
+            .build();
+
+    assertInstanceOf(CompositeFractalGenerator.class, generator);
+  }
+
+
+  /**
+   * Tests the successive zooms of a zoom animation: zoom * factor^k.
+   */
+  @Test
+  void testSuccessiveZooms() {
+    FractalGeneratorBuilder builder = new FractalGeneratorBuilder().animatedWithZoom(0.5, 4);
+
+    assertEquals(0.004, builder.zoomForFrame(0.004, 0));
+    assertEquals(0.002, builder.zoomForFrame(0.004, 1));
+    assertEquals(0.0005, builder.zoomForFrame(0.004, 3));
+  }
+
+  /**
+   * Tests the successive angles of a rotation animation.
+   * Starting from 0, the next term of Julia's sequence is the constant c itself,
+   * so it shows the rotated constant. With c = 1 and a step of pi/2, the frames
+   * give 1, i, -1 and -i (a quarter turn each time).
+   */
+  @Test
+  void testSuccessiveAngles() {
+    FractalGeneratorBuilder builder = new FractalGeneratorBuilder()
+            .animatedWithRotation(new Complex(1, 0), Math.PI / 2, 4);
+    double[][] expected = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+    IComplex zero = new Complex(0, 0);
+
+    for (int k = 0; k < expected.length; k++) {
+      IComplex rotatedConstant = builder.sequenceForFrame(null, k)
+              .apply(zero, 10)
+              .computeNext(zero);
+      assertEquals(expected[k][0], rotatedConstant.getRealPart(), 1e-9);
+      assertEquals(expected[k][1], rotatedConstant.getImaginaryPart(), 1e-9);
+    }
+  }
+
+  /**
+   * Tests that the sequence is not changed when no rotation is requested.
+   */
+  @Test
+  void testNoRotationKeepsTheSequence() {
+    FractalGeneratorBuilder builder = new FractalGeneratorBuilder();
+    BiFunction<IComplex, Integer, IComplexSequence> sequence = builder.getSequenceFactory();
+
+    assertSame(sequence, builder.sequenceForFrame(sequence, 3));
+  }
+
+  /**
+   * Tests that building an animation leaves the builder unchanged, with its
+   * initial zoom and sequence.
+   */
+  @Test
+  void testBuildRestoresTheBuilder() {
+    FractalGeneratorBuilder builder = new FractalGeneratorBuilder()
+            .withSize(800, 600)
+            .zoomedBy(0.5)
+            .animatedWithZoom(0.5, 3);
+    BiFunction<IComplex, Integer, IComplexSequence> sequence = builder.getSequenceFactory();
+
+    builder.build();
+
+    // With the initial zoom 0.5, the pixel 100 columns right of the center is 50.
+    assertEquals(new Complex(50, 0), builder.getPlane().asComplex(300, 500));
+    assertSame(sequence, builder.getSequenceFactory());
+  }
+
+  /**
    * Tests that changing the number of iterations keeps the last value.
    */
   @Test
@@ -166,3 +251,4 @@ class FractalGeneratorBuilderTest {
   }
 
 }
+
