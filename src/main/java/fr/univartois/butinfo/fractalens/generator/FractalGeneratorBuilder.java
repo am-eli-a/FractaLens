@@ -80,6 +80,16 @@ public class FractalGeneratorBuilder {
   private static final int DEFAULT_FRAME_DELAY = 100;
 
   /**
+   * The default angle between two successive frames of a rotation (no rotation).
+   */
+  private static final double DEFAULT_ROTATION_STEP = 0.0;
+
+  /**
+   * The power used for Julia's sequence when it is rotated (z² + c).
+   */
+  private static final int JULIA_POWER = 2;
+
+  /**
    * The default function creating the sequence to evaluate (Mandelbrot's sequence).
    */
   private static final BiFunction<IComplex, Integer, IComplexSequence> DEFAULT_SEQUENCE =
@@ -100,6 +110,16 @@ public class FractalGeneratorBuilder {
    * The height of the image (in pixels).
    */
   private int height;
+
+  /**
+   * The constant c of Julia's sequence to rotate, or null if no rotation is applied.
+   */
+  private IComplex rotationConstant;
+
+  /**
+   * The angle added to the rotation between two successive frames.
+   */
+  private double rotationStep;
 
   /**
    * The zoom factor applied on the complex plane.
@@ -148,10 +168,28 @@ public class FractalGeneratorBuilder {
     this.frameDelay = DEFAULT_FRAME_DELAY;
     this.zoomFactor = DEFAULT_ZOOM_FACTOR;
     this.frameCount = DEFAULT_FRAME_COUNT;
+    this.rotationStep = DEFAULT_ROTATION_STEP;
   }
 
   public FractalGeneratorBuilder animatedWithZoom(double factor, int frames){
     this.zoomFactor = factor;
+    this.frameCount = frames;
+    return this;
+  }
+
+  /**
+   * Animates the fractal with a rotation of the constant of Julia's sequence.
+   * The frame k uses Julia's sequence with the constant rotated by k times the step.
+   *
+   * @param constant The constant c of Julia's sequence, before any rotation.
+   * @param step The angle (in radians) added between two successive frames.
+   * @param frames The number of frames of the animation.
+   *
+   * @return This builder.
+   */
+  public FractalGeneratorBuilder animatedWithRotation(IComplex constant, double step, int frames) {
+    this.rotationConstant = constant;
+    this.rotationStep = step;
     this.frameCount = frames;
     return this;
   }
@@ -331,6 +369,8 @@ public class FractalGeneratorBuilder {
 
   /**
    * Creates the fractal generator configured by this builder.
+   * If an animation is requested, a composite containing one generator per frame
+   * is created. Otherwise, a single generator is created.
    *
    * @return The created generator.
    */
@@ -340,13 +380,48 @@ public class FractalGeneratorBuilder {
     }
 
     double initialZoom = zoom;
+    BiFunction<IComplex, Integer, IComplexSequence> initialSequence = sequenceFactory;
     List<IFractalGenerator> generators = new ArrayList<>();
 
     for (int k = 0; k < frameCount; k++) {
-      zoom = initialZoom * Math.pow(zoomFactor, k);
+      zoom = zoomForFrame(initialZoom, k);
+      sequenceFactory = sequenceForFrame(initialSequence, k);
       generators.add(new FractalGenerator(this));
     }
 
     zoom = initialZoom;
+    sequenceFactory = initialSequence;
     return new CompositeFractalGenerator(generators, frameDelay, outputFile);
+  }
+
+  /**
+   * Computes the zoom of a frame of the animation.
+   *
+   * @param initialZoom The zoom of the first frame.
+   * @param k The index of the frame.
+   *
+   * @return The zoom of the frame k, that is {@code initialZoom * zoomFactor^k}.
+   */
+  double zoomForFrame(double initialZoom, int k) {
+    return initialZoom * Math.pow(zoomFactor, k);
+  }
+
+  /**
+   * Computes the sequence of a frame of the animation.
+   * If a rotation is requested, the frame k uses Julia's sequence with its constant
+   * rotated by {@code k * rotationStep}. Otherwise, the initial sequence is used.
+   *
+   * @param initialSequence The sequence used when no rotation is applied.
+   * @param k The index of the frame.
+   *
+   * @return The function creating the sequence of the frame k.
+   */
+  BiFunction<IComplex, Integer, IComplexSequence> sequenceForFrame(
+          BiFunction<IComplex, Integer, IComplexSequence> initialSequence, int k) {
+    if (rotationConstant == null) {
+      return initialSequence;
+    }
+    IComplex constant = rotationConstant;
+    double theta = k * rotationStep;
+    return (z0, nbTerms) -> ComplexSequences.rotatedMultiJulia(z0, nbTerms, constant, theta, JULIA_POWER);
   }
