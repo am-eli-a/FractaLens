@@ -103,4 +103,9 @@ public class BufferedImageAdapter implements IFractalImage {
   public void saveAs(String path) throws IOException {
     ImageIO.write(image, "png", new File(path));
   }
+
+  @Override
+  public BufferedImage asBufferedImage() {
+    return image;
+  }
 }
