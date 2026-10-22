@@ -462,4 +462,114 @@ class ComplexSequencesTest {
     assertEquals(1, nbIterations);
   }
 
+  /**
+   * Checks that a complex number has the expected real and imaginary parts, with a
+   * tolerance because the rotations are computed with cosines and sines.
+   *
+   * @param expectedReal The expected real part.
+   * @param expectedImaginary The expected imaginary part.
+   * @param actual The complex number to check.
+   */
+  private static void assertComplexEquals(double expectedReal, double expectedImaginary,
+                                          IComplex actual) {
+    assertEquals(expectedReal, actual.getRealPart(), 0.001);
+    assertEquals(expectedImaginary, actual.getImaginaryPart(), 0.001);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * with an angle of 0: the constant is unchanged.
+   */
+  @Test
+  void testRotatedMultiJuliaWithAngleZero() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(1, 1), 0, 2);
+
+    assertComplexEquals(1, 1, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * with an angle of pi/2: the constant is multiplied by i, so
+   * i * (1 + i) = -1 + i.
+   */
+  @Test
+  void testRotatedMultiJuliaWithQuarterTurn() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(1, 1), Math.PI / 2, 2);
+
+    assertComplexEquals(-1, 1, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * with an angle of pi: the constant becomes its opposite, -(1 + i).
+   */
+  @Test
+  void testRotatedMultiJuliaWithHalfTurn() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(1, 1), Math.PI, 2);
+
+    assertComplexEquals(-1, -1, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * with an angle of 2 pi: a full turn gives back the original constant.
+   */
+  @Test
+  void testRotatedMultiJuliaWithFullTurn() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(1, 1), 2 * Math.PI, 2);
+
+    assertComplexEquals(1, 1, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * on a real constant: 2 rotated by pi/2 gives 2i.
+   */
+  @Test
+  void testRotatedMultiJuliaOnRealConstant() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(2, 0), Math.PI / 2, 2);
+
+    assertComplexEquals(0, 2, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * with a null constant: the rotation does not change it.
+   */
+  @Test
+  void testRotatedMultiJuliaWithNullConstant() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(0, 0), 1.234, 2);
+
+    assertComplexEquals(0, 0, sequence.computeNext(new Complex(0, 0)));
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * checking that a rotation keeps the modulus of the constant: |3 + 4i| = 5.
+   */
+  @Test
+  void testRotatedMultiJuliaKeepsModulus() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(3, 4), 0.7, 2);
+
+    assertEquals(5, sequence.computeNext(new Complex(0, 0)).abs(), 0.001);
+  }
+
+  /**
+   * Test method for
+   * {@link ComplexSequences#rotatedMultiJulia(IComplex, int, IComplex, double, int)}
+   * checking that the power is used: 2^3 + (1 rotated by pi = -1) = 7.
+   */
+  @Test
+  void testRotatedMultiJuliaUsesPower() {
+    IComplexSequence sequence = ComplexSequences.rotatedMultiJulia(Z0, MAX_ITERATIONS, new Complex(1, 0), Math.PI, 3);
+
+    assertComplexEquals(7, 0, sequence.computeNext(new Complex(2, 0)));
+  }
 }
