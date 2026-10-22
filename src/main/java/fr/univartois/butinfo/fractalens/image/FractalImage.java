@@ -45,4 +45,14 @@ public class FractalImage implements IFractalImage {
             throw new IOException("Impossible de sauvegarder");
         }
     }
+
+    /**
+     * Gives the {@link BufferedImage} adapted by this image.
+     *
+     * @return The adapted image.
+     */
+    @Override
+    public BufferedImage asBufferedImage() {
+        return image;
+    }
 }

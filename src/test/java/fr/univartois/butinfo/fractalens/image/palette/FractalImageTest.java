@@ -40,7 +40,7 @@ import fr.univartois.butinfo.fractalens.image.FractalImage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
+import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * The FractalImageTest tests the {@link FractalImage} class.
  * As the adapted {@link BufferedImage} is not exposed, the pixels are checked by saving
@@ -182,5 +182,29 @@ class FractalImageTest {
         BufferedImage result = ImageIO.read(file);
         assertEquals(HEIGHT, result.getHeight());
         assertEquals(WIDTH, result.getWidth());
+    }
+    /**
+     * Test method for {@link FractalImage#asBufferedImage()}, checking that the adapted
+     * image is returned, with the right dimensions, and that it is not a copy.
+     */
+    @Test
+    void testAsBufferedImage() {
+        BufferedImage result = image.asBufferedImage();
+
+        assertNotNull(result);
+        assertEquals(HEIGHT, result.getHeight());
+        assertEquals(WIDTH, result.getWidth());
+        assertSame(result, image.asBufferedImage());
+    }
+
+    /**
+     * Test method for {@link FractalImage#asBufferedImage()}, checking that the colors
+     * set through the adapter are visible in the returned image.
+     */
+    @Test
+    void testAsBufferedImageKeepsColors() {
+        image.setColor(1, 2, Color.RED);
+
+        assertEquals(Color.RED.getRGB(), image.asBufferedImage().getRGB(2, 1));
     }
 }

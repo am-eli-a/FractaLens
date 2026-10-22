@@ -24,6 +24,7 @@ package fr.univartois.butinfo.fractalens.image;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -91,6 +92,17 @@ class BufferedImageAdapterTest {
     Path file = folder.resolve("Image.png");
     adapter.saveAs(file.toString());
     assertTrue(Files.exists(Path.of(file.toString())));
+  }
+
+  /**
+   * Test method for {@link BufferedImageAdapter#asBufferedImage()}:
+   * it must return the adapted image itself, not a copy.
+   */
+  @Test
+  void testAsBufferedImage() {
+    BufferedImage image = new BufferedImage(6, 21, BufferedImage.TYPE_INT_RGB);
+    BufferedImageAdapter adapter = new BufferedImageAdapter(image);
+    assertSame(image, adapter.asBufferedImage());
   }
 
 }

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ class FractalGeneratorTest {
 	@Test
 	void testComputePixelColorWhenSequenceDiverges() {
 		FractalGenerator generator = createGenerator(new FakeImage(1, 1),
-				(z0, max) -> new FakeSequence(3));
+						(z0, max) -> new FakeSequence(3));
 
 		assertEquals(new Color(3, MAX_ITERATIONS, 0), generator.computePixelColor(0, 0));
 	}
@@ -92,10 +93,10 @@ class FractalGeneratorTest {
 	@Test
 	void testComputePixelColorWhenSequenceConverges() {
 		FractalGenerator generator = createGenerator(new FakeImage(1, 1),
-				(z0, max) -> new FakeSequence(max));
+						(z0, max) -> new FakeSequence(max));
 
 		assertEquals(new Color(MAX_ITERATIONS, MAX_ITERATIONS, 0),
-				generator.computePixelColor(0, 0));
+						generator.computePixelColor(0, 0));
 	}
 
 	/**
@@ -126,7 +127,7 @@ class FractalGeneratorTest {
 	void testGenerateImage() {
 		FakeImage image = new FakeImage(2, 3);
 		FractalGenerator generator = createGenerator(image,
-				(z0, max) -> new FakeSequence((int) (z0.getRealPart() + z0.getImaginaryPart())));
+						(z0, max) -> new FakeSequence((int) (z0.getRealPart() + z0.getImaginaryPart())));
 
 		IFractalImage result = generator.generateImage();
 
@@ -134,7 +135,7 @@ class FractalGeneratorTest {
 		for (int row = 0; row < image.getHeight(); row++) {
 			for (int column = 0; column < image.getWidth(); column++) {
 				assertEquals(new Color(row + column, MAX_ITERATIONS, 0),
-						image.getColor(row, column));
+								image.getColor(row, column));
 			}
 		}
 	}
@@ -174,7 +175,7 @@ class FractalGeneratorTest {
 	 * @return The created generator.
 	 */
 	private static FractalGenerator createGenerator(IFractalImage image,
-													BiFunction<IComplex, Integer, IComplexSequence> sequenceFactory) {
+																									BiFunction<IComplex, Integer, IComplexSequence> sequenceFactory) {
 		FractalGeneratorBuilder builder = new FractalGeneratorBuilder(){
 			@Override
 			public IFractalImage getImage (){
@@ -187,9 +188,9 @@ class FractalGeneratorTest {
 			}
 		};
 		builder.usingSequence(sequenceFactory)
-				.withMaxIterations(MAX_ITERATIONS)
-				.coloredWith(PALETTE)
-				.savedAs("fractale.png");
+						.withMaxIterations(MAX_ITERATIONS)
+						.coloredWith(PALETTE)
+						.savedAs("fractale.png");
 		return new FractalGenerator(builder);
 	}
 
@@ -335,6 +336,16 @@ class FractalGeneratorTest {
 				throw new IOException("Cannot save the image");
 			}
 			savedPath = path;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see fr.univartois.butinfo.fractalens.image.IFractalImage#asBufferedImage()
+		 */
+		@Override
+		public BufferedImage asBufferedImage() {
+			throw new UnsupportedOperationException("Not used in this test.");
 		}
 
 	}
