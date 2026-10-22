@@ -30,11 +30,15 @@ import fr.univartois.butinfo.fractalens.image.palette.PaletteType;
  * created when they are requested, so that they are always consistent with the
  * last values that have been set.
  *
+ * The builder can also configure an animation (a zoom, a rotation, or both). In
+ * this case, it creates one generator per frame, and gathers them in a
+ * {@link CompositeFractalGenerator}.
+ *
  * Every setting has a default value, used when it is not configured.
  *
  * @author Baptiste Wagee
  *
- * @version 0.1.0
+ * @version 0.2.0
  */
 public class FractalGeneratorBuilder {
 
@@ -73,14 +77,23 @@ public class FractalGeneratorBuilder {
    */
   private static final IPalette DEFAULT_PALETTE = new GrayScale();
 
+  /**
+   * The default number of frames (a single image, without animation).
+   */
   private static final int DEFAULT_FRAME_COUNT = 1;
 
+  /**
+   * The default factor applied to the zoom between two frames (no zoom animation).
+   */
   private static final double DEFAULT_ZOOM_FACTOR = 1.0;
 
+  /**
+   * The default delay between two frames of an animation (in milliseconds).
+   */
   private static final int DEFAULT_FRAME_DELAY = 100;
 
   /**
-   * The default angle between two successive frames of a rotation (no rotation).
+   * The default angle between two frames of a rotation (no rotation).
    */
   private static final double DEFAULT_ROTATION_STEP = 0.0;
 
@@ -112,16 +125,6 @@ public class FractalGeneratorBuilder {
   private int height;
 
   /**
-   * The constant c of Julia's sequence to rotate, or null if no rotation is applied.
-   */
-  private IComplex rotationConstant;
-
-  /**
-   * The angle added to the rotation between two successive frames.
-   */
-  private double rotationStep;
-
-  /**
    * The zoom factor applied on the complex plane.
    */
   private double zoom;
@@ -146,12 +149,30 @@ public class FractalGeneratorBuilder {
    */
   private String outputFile;
 
+  /**
+   * The number of frames of the animation (1 if there is no animation).
+   */
   private int frameCount;
 
+  /**
+   * The factor applied to the zoom between two frames.
+   */
   private double zoomFactor;
 
+  /**
+   * The delay between two frames of the animation (in milliseconds).
+   */
   private int frameDelay;
 
+  /**
+   * The constant c of Julia's sequence to rotate, or null if no rotation is applied.
+   */
+  private IComplex rotationConstant;
+
+  /**
+   * The angle added to the rotation between two frames (in radians).
+   */
+  private double rotationStep;
 
   /**
    * Creates a new FractalGeneratorBuilder, initialized with the default values.
@@ -165,39 +186,12 @@ public class FractalGeneratorBuilder {
     this.center = DEFAULT_CENTER;
     this.palette = DEFAULT_PALETTE;
     this.sequenceFactory = DEFAULT_SEQUENCE;
-    this.frameDelay = DEFAULT_FRAME_DELAY;
-    this.zoomFactor = DEFAULT_ZOOM_FACTOR;
     this.frameCount = DEFAULT_FRAME_COUNT;
+    this.zoomFactor = DEFAULT_ZOOM_FACTOR;
+    this.frameDelay = DEFAULT_FRAME_DELAY;
     this.rotationStep = DEFAULT_ROTATION_STEP;
   }
 
-  public FractalGeneratorBuilder animatedWithZoom(double factor, int frames){
-    this.zoomFactor = factor;
-    this.frameCount = frames;
-    return this;
-  }
-
-  /**
-   * Animates the fractal with a rotation of the constant of Julia's sequence.
-   * The frame k uses Julia's sequence with the constant rotated by k times the step.
-   *
-   * @param constant The constant c of Julia's sequence, before any rotation.
-   * @param step The angle (in radians) added between two successive frames.
-   * @param frames The number of frames of the animation.
-   *
-   * @return This builder.
-   */
-  public FractalGeneratorBuilder animatedWithRotation(IComplex constant, double step, int frames) {
-    this.rotationConstant = constant;
-    this.rotationStep = step;
-    this.frameCount = frames;
-    return this;
-  }
-
-  public FractalGeneratorBuilder withFrameDelay(int delay){
-    this.frameDelay=delay;
-    return this;
-  }
   /**
    * Sets the sequence to evaluate, given as a function.
    *
@@ -308,6 +302,52 @@ public class FractalGeneratorBuilder {
    */
   public FractalGeneratorBuilder savedAs(String outputFile) {
     this.outputFile = outputFile;
+    return this;
+  }
+
+  /**
+   * Animates the fractal with a zoom. The frame k uses a zoom equal to
+   * {@code zoom * factor^k}.
+   *
+   * @param factor The factor applied to the zoom between two frames (between 0 and 1
+   *        to zoom in).
+   * @param frames The number of frames of the animation.
+   *
+   * @return This builder.
+   */
+  public FractalGeneratorBuilder animatedWithZoom(double factor, int frames) {
+    this.zoomFactor = factor;
+    this.frameCount = frames;
+    return this;
+  }
+
+  /**
+   * Animates the fractal with a rotation of the constant of Julia's sequence.
+   * The frame k uses Julia's sequence with its constant rotated by
+   * {@code k * step}.
+   *
+   * @param constant The constant c of Julia's sequence, before any rotation.
+   * @param step The angle (in radians) added between two frames.
+   * @param frames The number of frames of the animation.
+   *
+   * @return This builder.
+   */
+  public FractalGeneratorBuilder animatedWithRotation(IComplex constant, double step, int frames) {
+    this.rotationConstant = constant;
+    this.rotationStep = step;
+    this.frameCount = frames;
+    return this;
+  }
+
+  /**
+   * Sets the delay between two frames of the animation.
+   *
+   * @param delay The delay between two frames (in milliseconds).
+   *
+   * @return This builder.
+   */
+  public FractalGeneratorBuilder withFrameDelay(int delay) {
+    this.frameDelay = delay;
     return this;
   }
 
@@ -425,3 +465,5 @@ public class FractalGeneratorBuilder {
     double theta = k * rotationStep;
     return (z0, nbTerms) -> ComplexSequences.rotatedMultiJulia(z0, nbTerms, constant, theta, JULIA_POWER);
   }
+
+}
