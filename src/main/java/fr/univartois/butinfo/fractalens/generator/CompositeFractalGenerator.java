@@ -38,7 +38,8 @@ public class CompositeFractalGenerator implements IFractalGenerator {
 
   @Override
   public Color computePixelColor(int row, int column) {
-    return null;
+    throw new UnsupportedOperationException(
+            "composite generator cannot compute a single pixel color.");
   }
 
   @Override
