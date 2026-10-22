@@ -1,93 +1,81 @@
 package fr.univartois.butinfo.fractalens.application;
 
 import fr.univartois.butinfo.fractalens.complex.Complex;
-import fr.univartois.butinfo.fractalens.complex.IComplex;
 import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequenceType;
-import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequences;
 import fr.univartois.butinfo.fractalens.generator.FractalGeneratorBuilder;
 import fr.univartois.butinfo.fractalens.generator.IFractalGenerator;
 import fr.univartois.butinfo.fractalens.image.palette.FixedPalette;
 import fr.univartois.butinfo.fractalens.image.palette.IPalette;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.List;
 
 /**
- * The Main class generates three fractal images using the fractal generator
- * builder: a Mandelbrot fractal, a Burning Ship fractal and a fractal defined by
- * a free formula (z³ + z² + c).
- * Each image is described by a chain of calls on the builder, which configures its
- * sequence, size, zoom, center, maximum number of iterations, palette and output file.
+ * The Main class generates two animated GIF images using the fractal generator
+ * builder: a zoom on the Mandelbrot fractal, centered on
+ * -0.743643887037151 + 0.131825904205330i, and a rotation of the constant of
+ * Julia's sequence, starting from c = 0.7885.
+ * Each animation is described by a chain of calls on the builder, which creates one
+ * generator per frame and gathers them in a composite generator.
  *
  * @author Nathan Salomé
  * @author Matty Fourmestraux
  * @author Baptiste Wagee
  *
- * @version 0.4.0
+ * @version 0.5.0
  */
 public class Main {
 
   /**
-   * Generates the three demonstration images and saves them.
+   * Generates the two demonstration animations and saves them.
    *
-   * @param args The names of the three output files (optional). If they are not
-   *        given, the images are saved in {@code fractal1.png}, {@code fractal2.png}
-   *        and {@code fractal3.png}.
+   * @param args The names of the two output files (optional). If they are not
+   *        given, the animations are saved in {@code mandelbrot-zoom.gif} and
+   *        {@code julia-rotation.gif}.
    */
   public static void main(String[] args) {
-    String firstOutput = (args.length > 0) ? args[0] : "fractal1.png";
-    String secondOutput = (args.length > 1) ? args[1] : "fractal2.png";
-    String thirdOutput = (args.length > 2) ? args[2] : "fractal3.png";
+    String zoomOutput = (args.length > 0) ? args[0] : "mandelbrot-zoom.gif";
+    String rotationOutput = (args.length > 1) ? args[1] : "julia-rotation.gif";
 
     IPalette firePalette = new FixedPalette(List.of(
             new Color(255, 255, 220), Color.YELLOW, Color.ORANGE, Color.RED, Color.BLACK));
 
-    IPalette icePalette = new FixedPalette(List.of(
-            Color.WHITE, new Color(150, 220, 255), new Color(30, 120, 220),
-            new Color(10, 30, 90), Color.BLACK));
+    IPalette nightPalette = new FixedPalette(List.of(
+            new Color(10, 10, 40), new Color(60, 30, 120), new Color(220, 80, 160),
+            new Color(255, 220, 120), Color.BLACK));
 
     IPalette forestPalette = new FixedPalette(List.of(
             new Color(5, 20, 10), new Color(20, 90, 40), new Color(120, 200, 80),
             new Color(230, 255, 200), Color.BLACK));
 
-    IFractalGenerator mandelbrot = new FractalGeneratorBuilder()
+    // Animation 1 : zoom sur Mandelbrot
+    IFractalGenerator mandelbrotZoom = new FractalGeneratorBuilder()
             .usingSequence(ComplexSequenceType.MANDELBROT)
-            .withSize(800, 600)
-            .zoomedBy(0.001)
-            .centeredAt(new Complex(-0.75, 0))
-            .withMaxIterations(250)
+            .withSize(600, 600)
+            .zoomedBy(0.015)
+            .centeredAt(new Complex(-0.743643887037151, 0.131825904205330))
+            .withMaxIterations(500)
             .coloredWith(firePalette)
-            .savedAs(firstOutput)
+            .animatedWithZoom(0.92, 120)
+            .withFrameDelay(80)
+            .savedAs(zoomOutput)
             .build();
-    mandelbrot.generateImage();
-    mandelbrot.saveImage();
+    mandelbrotZoom.generateImage();
+    mandelbrotZoom.saveImage();
 
-    IComplex burningShipConstant = new Complex(-1.6, -0.1);
-    IFractalGenerator burningShip = new FractalGeneratorBuilder()
-            .usingSequence((z0, max) -> ComplexSequences.burningShip(z0, max, burningShipConstant))
-            .withSize(800, 800)
-            .zoomedBy(0.0015)
+    // Animation 2 : rotation de Julia (c = 0.7885 au départ)
+    IFractalGenerator juliaRotation = new FractalGeneratorBuilder()
+            .withSize(400, 400)
+            .zoomedBy(0.016)
             .centeredAt(new Complex(0, 0))
-            .withMaxIterations(64)
-            .coloredWith(icePalette)
-            .savedAs(secondOutput)
-            .build();
-    burningShip.generateImage();
-    burningShip.saveImage();
-
-
-    IComplex cubicConstant = new Complex(-0.2, 0.75);
-    IFractalGenerator cubicJulia = new FractalGeneratorBuilder()
-            .usingSequence((z0, max) -> ComplexSequences.cubicJulia(z0, max, cubicConstant))
-            .withSize(800, 800)
-            .zoomedBy(0.0032)
-            .centeredAt(new Complex(-0.25, 0))
-            .withMaxIterations(40)
+            .withMaxIterations(50)
             .coloredWith(forestPalette)
-            .savedAs(thirdOutput)
+            .animatedWithRotation(new Complex(0.7885, 0), 2 * Math.PI / 72, 72)
+            .withFrameDelay(60)
+            .savedAs(rotationOutput)
             .build();
-    cubicJulia.generateImage();
-    cubicJulia.saveImage();
+    juliaRotation.generateImage();
+    juliaRotation.saveImage();
   }
 
 }
