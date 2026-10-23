@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 /**
  * The IComplexTest tests the base implementation of {@link IComplex}.
  *
- * @author Romain Wallon
  *
  * @version 0.1.0
  */
@@ -333,6 +332,10 @@ class ComplexTest {
         assertEquals("2.0 + 2.0i", z.toString());
     }
 
+    /**
+     * Test method for {@link IComplex#power(int)}, with the powers 0, 1, 2 and 3:
+     * (2 + 2i)^0 = 1, (2 + 2i)^1 = 2 + 2i, (2 + 2i)^2 = 8i and (2 + 2i)^3 = -16 + 16i.
+     */
     @Test
     void testPower() {
         IComplex complex = createComplex(2, 2);

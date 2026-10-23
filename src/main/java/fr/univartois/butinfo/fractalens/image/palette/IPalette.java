@@ -1,7 +1,14 @@
 package fr.univartois.butinfo.fractalens.image.palette;
 
-import java.awt.*;
+import java.awt.Color;
 
+/**
+ * The IPalette interface defines a strategy for choosing the color of a pixel, from
+ * the number of iterations performed on the sequence starting at this pixel.
+ *
+ *
+ * @version 0.1.0
+ */
 public interface IPalette {
 
     /**

@@ -5,7 +5,6 @@ import java.util.Objects;
 /**
  * Immutable implementation of {@link IComplex}.
  *
- * @author Nathan Salomé
  *
  * @version 0.1.0
  */
@@ -146,6 +145,15 @@ public class Complex implements IComplex {
   }
 
 
+  /**
+   * Raises this complex number to a given power, by multiplying it p times by itself.
+   *
+   * @param p The power (a non-negative integer).
+   *
+   * @return The result of {@code this^p} (which is 1 when p is 0).
+   *
+   * @see IComplex#power(int)
+   */
   @Override
   public IComplex power(int p){
     IComplex result = new Complex(1,0);
