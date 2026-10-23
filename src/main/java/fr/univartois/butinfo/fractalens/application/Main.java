@@ -23,10 +23,8 @@ public class Main {
         FractaLensCommand options = new FractaLensCommand();
         CommandLine commandLine = new CommandLine(options);
 
-        if (args.length == 0) {
-            commandLine.usage(System.out);
-            return;
-        }
-        System.exit(commandLine.execute(args));
+        // Without any option, the help message is displayed.
+        String[] arguments = (args.length == 0) ? new String[] { "--help" } : args;
+        System.exit(commandLine.execute(arguments));
     }
 }
