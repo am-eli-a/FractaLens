@@ -7,7 +7,6 @@ import java.awt.Color;
  * components (red, green and blue) of the colors given by the decorated palette.
  * The components that are not kept are set to 0.
  *
- * @author Amelia Dufour-Lazrek
  *
  * @version 0.1.0
  */
@@ -43,6 +42,17 @@ public class MaskDecorator extends PaletteDecorator {
         this.blue = blue;
     }
 
+    /**
+     * Computes the color given by the decorated palette, and only keeps the selected
+     * components. The other components are set to 0.
+     *
+     * @param nbIteration The number of iterations performed on the sequence.
+     * @param maxIteration The maximum number of iterations that can be performed.
+     *
+     * @return The color with only the selected components.
+     *
+     * @see IPalette#getColor(int, int)
+     */
     @Override
     public Color getColor(int nbIteration, int maxIteration) {
         Color couleur = palette.getColor(nbIteration, maxIteration);

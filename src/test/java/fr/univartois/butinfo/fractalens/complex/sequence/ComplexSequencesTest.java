@@ -38,7 +38,6 @@ import fr.univartois.butinfo.fractalens.complex.IComplex;
  *
  * The values are chosen so that the expected results can be computed by hand.
  *
- * @author Baptiste Wagee
  *
  * @version 0.1.0
  */
@@ -149,6 +148,10 @@ class ComplexSequencesTest {
     assertTrue(nbIterations < MAX_ITERATIONS);
   }
 
+  /**
+   * Test method for {@link ComplexSequences#cubicJulia(IComplex, int, IComplex)},
+   * starting from 0: 0^3 + 0^2 + c = c.
+   */
   @Test
   void testCubicJuliaComputeNextFromZero(){
     IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0,1), MAX_ITERATIONS, new Complex(1, 1));
@@ -156,6 +159,10 @@ class ComplexSequencesTest {
     assertEquals(new Complex(1,1), result);
   }
 
+  /**
+   * Test method for {@link ComplexSequences#cubicJulia(IComplex, int, IComplex)},
+   * starting from 1: 1^3 + 1^2 + 0 = 2.
+   */
   @Test
   void testCubicJuliaComputeNextFromOne() {
     IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), MAX_ITERATIONS, new Complex(0, 0));
@@ -176,6 +183,10 @@ class ComplexSequencesTest {
     assertEquals(new Complex(0, -2), sequence.computeNext(new Complex(1, 1)));
   }
 
+  /**
+   * Test method for {@link ComplexSequences#cubicJulia(IComplex, int, IComplex)},
+   * starting from i: i^3 + i^2 + 0 = -i - 1.
+   */
   @Test
   void testCubicJuliaComputeNextFromI() {
     IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), MAX_ITERATIONS, new Complex(0, 0));
@@ -183,6 +194,10 @@ class ComplexSequencesTest {
     assertEquals(new Complex(-1, -1), result);
   }
 
+  /**
+   * Test method for {@link ComplexSequences#cubicJulia(IComplex, int, IComplex)},
+   * when the sequence diverges: the iteration stops before the maximum.
+   */
   @Test
   void testCubicJuliaOnDivergence() {
     IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(2, 0), 50, new Complex(0, 0));
@@ -193,6 +208,10 @@ class ComplexSequencesTest {
     assertTrue(nbIterations < 50);
   }
 
+  /**
+   * Test method for {@link ComplexSequences#cubicJulia(IComplex, int, IComplex)},
+   * when the sequence converges (it stays at 0): all the terms are computed.
+   */
   @Test
   void testCubicJuliaOnConvergence() {
     IComplexSequence sequence = ComplexSequences.cubicJulia(new Complex(0, 0), 50, new Complex(0, 0));
@@ -284,6 +303,10 @@ class ComplexSequencesTest {
 
 
 
+  /**
+   * Test method for {@link ComplexSequences#tricorn(IComplex, int, IComplex)}, with a
+   * constant: conj(1 + i)^2 + 1 = -2i + 1.
+   */
   @Test
   void testTricornWithConstant() {
     IComplexSequence sequence = ComplexSequences.tricorn(Z0, MAX_ITERATIONS, new Complex(1, 0));
@@ -291,6 +314,11 @@ class ComplexSequencesTest {
     assertEquals(new Complex(1, -2), sequence.computeNext(new Complex(1, 1)));
   }
 
+  /**
+   * Test method for
+   * {@link ComplexSequences#tricornGeneral(IComplex, int, IComplex, int)} with a power
+   * of 2: the result must be the same as the classical Tricorn sequence.
+   */
   @Test
   void testTricornGeneralWithPowerTwoIsTricorn() {
     IComplex c = new Complex(0.5, 0.5);
@@ -301,6 +329,11 @@ class ComplexSequencesTest {
     assertEquals(tricorn.computeNext(previous), tricornGeneral.computeNext(previous));
   }
 
+  /**
+   * Test method for
+   * {@link ComplexSequences#tricornGeneral(IComplex, int, IComplex, int)} with a power
+   * of 3: conj(1 + i)^3 + 0 = (1 - i)^3 = -2 - 2i.
+   */
   @Test
   void testTricornGeneralWithPowerThree() {
     IComplexSequence sequence = ComplexSequences.tricornGeneral(Z0, MAX_ITERATIONS, new Complex(0, 0), 3);

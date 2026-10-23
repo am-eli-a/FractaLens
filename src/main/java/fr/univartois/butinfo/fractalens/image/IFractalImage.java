@@ -31,7 +31,6 @@ import java.io.IOException;
  * The IFractalImage interface defines how to handle the image on which the fractal is
  * drawn.
  *
- * @author Romain Wallon
  *
  * @version 0.1.0
  */
@@ -69,5 +68,11 @@ public interface IFractalImage {
      */
     void saveAs(String path) throws IOException;
 
+    /**
+     * Gives this image as a {@link BufferedImage}, for instance to add it to an
+     * animated GIF.
+     *
+     * @return The {@link BufferedImage} corresponding to this image.
+     */
     BufferedImage asBufferedImage();
 }
