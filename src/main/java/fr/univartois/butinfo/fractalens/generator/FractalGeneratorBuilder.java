@@ -106,8 +106,7 @@ public class FractalGeneratorBuilder {
    * The default function creating the sequence to evaluate (Mandelbrot's sequence).
    */
   private static final BiFunction<IComplex, Integer, IComplexSequence> DEFAULT_SEQUENCE =
-          (z0, nbTerms) -> ComplexSequences.mandelbrot(z0, nbTerms);
-
+          ComplexSequences::mandelbrot;
   /**
    * The function creating the sequence to evaluate, from its first term and its
    * maximum number of terms.

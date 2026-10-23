@@ -40,7 +40,7 @@ class GenericComplexSequenceTest {
     @Test
     void testComputeNextUsesPreviousAndFirstTerms() {
         GenericComplexSequence sequence = new GenericComplexSequence(
-                (z, c) -> z.add(c), new Complex(1, 0), 10);
+                IComplex::add, new Complex(1, 0), 10);
 
         assertEquals(new Complex(3, 0), sequence.computeNext(new Complex(2, 0)));
     }
