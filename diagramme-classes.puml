@@ -126,6 +126,7 @@ package complex.sequence {
         MULTIBROT
         CUBIC_JULIA
         MIXED_JULIA_MANDELBROT
+        - sequenceFactory : BiFunction<IComplex, Integer, IComplexSequence> {readOnly}
         + getSequenceFactory() : BiFunction<IComplex, Integer, IComplexSequence>
     }
 
@@ -174,6 +175,14 @@ package image.palette {
     }
 
     enum PaletteType {
+        GRAYSCALE
+        GRADIENT
+        FIXED
+        FIRE
+        NIGHT
+        FOREST
+        INVERTED_CYAN
+        - paletteFactory : Supplier<IPalette> {readOnly}
         + getPalette() : IPalette
     }
 
@@ -185,6 +194,11 @@ package image.palette {
     MaskDecorator --|> PaletteDecorator
     InversionDecorator --|> PaletteDecorator
     PaletteType ..> IPalette : << provides >>
+    PaletteType ..> GrayScale : << creates >>
+    PaletteType ..> GradientPalette : << creates >>
+    PaletteType ..> FixedPalette : << creates >>
+    PaletteType ..> MaskDecorator : << creates >>
+    PaletteType ..> InversionDecorator : << creates >>
 }
 
 ' -------------- '
@@ -214,6 +228,12 @@ package image {
     }
     BufferedImageAdapter ..|> IFractalImage
     BufferedImageAdapter o--> "1" BufferedImage : - image
+
+    enum ImageType {
+        SINGLE
+        ZOOM
+        ROTATION
+    }
 }
 
 ' ------------------ '
@@ -294,14 +314,47 @@ package application {
         + {static} main(args : String[]) : void
     }
 
-    enum ImageType {
-        SINGLE
-        ZOOM
-        ROTATION
+    class FractaLensCommand {
+        - fractalName : ComplexSequenceType
+        - nbIterations : int
+        - height : int
+        - width : int
+        - scale : double
+        - focusX : double
+        - focusY : double
+        - paletteName : PaletteType
+        - type : ImageType
+        - imageCount : int
+        - zoomFactor : double
+        - delay : int
+        - cReal : double
+        - cImaginary : double
+        - output : String
+        - helpRequested : boolean
+        + call() : Integer
     }
 
-    Main ..> FractalGeneratorBuilder : << configures >>
-    Main ..> ImageType
+    interface "Callable<Integer>" as Callable
+
+    class ContestAnimations << (U,#9999FF) utility >> {
+        - {static} ZOOM_SIZE : int
+        - {static} ROTATION_SIZE : int
+        - {static} ROTATION_FRAMES : int
+        + {static} main(args : String[]) : void
+        - {static} juliaRotation(output : String) : void
+        - {static} infiniteZoom(output : String) : void
+        - {static} generalizedBurningShipRotation(output : String) : void
+        - {static} rotatedConstant(modulus : double, frame : int) : IComplex
+        - {static} duskPalette() : IPalette
+    }
+
+    ContestAnimations ..> FractalGeneratorBuilder : << configures >>
+    ContestAnimations ..> CompositeFractalGenerator : << creates >>
+
+    FractaLensCommand ..|> Callable
+    Main ..> FractaLensCommand : << runs >>
+    FractaLensCommand ..> FractalGeneratorBuilder : << configures >>
+    FractaLensCommand ..> ImageType
 }
 
 ' ------------------------------ '
@@ -318,6 +371,6 @@ FractalGeneratorBuilder ..> PaletteType
 FractalGeneratorBuilder ..> ZoomDecorator : << creates >>
 FractalGeneratorBuilder ..> TranslationDecorator : << creates >>
 FractalGeneratorBuilder ..> BufferedImageAdapter : << creates >>
-Main ..> ComplexSequenceType : << parses -f >>
-Main ..> PaletteType : << parses -p >>
+FractaLensCommand ..> ComplexSequenceType : << parses -f >>
+FractaLensCommand ..> PaletteType : << parses -p >>
 @enduml
