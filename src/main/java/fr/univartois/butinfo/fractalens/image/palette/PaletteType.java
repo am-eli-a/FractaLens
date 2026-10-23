@@ -51,4 +51,14 @@ public enum PaletteType {
         };
     }
 
+    IPalette firePalette = new FixedPalette(List.of(
+            new Color(255, 255, 220), Color.YELLOW, Color.ORANGE, Color.RED, Color.BLACK));
+
+    IPalette nightPalette = new FixedPalette(List.of(
+            new Color(10, 10, 40), new Color(60, 30, 120), new Color(220, 80, 160),
+            new Color(255, 220, 120), Color.BLACK));
+
+    IPalette forestPalette = new FixedPalette(List.of(
+            new Color(5, 20, 10), new Color(20, 90, 40), new Color(120, 200, 80),
+            new Color(230, 255, 200), Color.BLACK));
 }
