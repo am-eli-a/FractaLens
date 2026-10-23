@@ -1,30 +1,23 @@
 package fr.univartois.butinfo.fractalens.application;
 
 import picocli.CommandLine;
-import java.awt.*;
 
 /**
- * The Main class generates two animated GIF images using the fractal generator
- * builder: a zoom on the Mandelbrot fractal, centered on
- * -0.743643887037151 + 0.131825904205330i, and a rotation of the constant of
- * Julia's sequence, starting from c = 0.7885.
- * Each animation is described by a chain of calls on the builder, which creates one
- * generator per frame and gathers them in a composite generator.
+ * The Main class is the entry point of the application.
+ * It reads the options of the command line with the picocli library, and generates
+ * the corresponding image or animation. When no option is given, it displays the
+ * help message.
  *
- * @author Nathan Salomé
- * @author Matty Fourmestraux
- * @author Baptiste Wagee
  *
- * @version 0.5.0
+ * @version 0.6.0
  */
 public class Main {
 
     /**
-     * Generates the two demonstration animations and saves them.
+     * Runs the application with the options given on the command line.
      *
-     * @param args The names of the two output files (optional). If they are not
-     *        given, the animations are saved in {@code mandelbrot-zoom.gif} and
-     *        {@code julia-rotation.gif}.
+     * @param args The options of the command line. If there is none, the help message
+     *        is displayed.
      */
     public static void main(String[] args) {
         FractaLensCommand options = new FractaLensCommand();
