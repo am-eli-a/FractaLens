@@ -425,6 +425,12 @@ package application {
         + {static} main(args : String[]) : void
     }
 
+    enum ImageType {
+        SINGLE
+        ZOOM
+        ROTATION
+    }
+
     class FractaLensCommand {
         - fractalName : ComplexSequenceType
         - nbIterations : int
@@ -448,13 +454,6 @@ package application {
 
     FractaLensCommand ..|> Callable
     Main ..> FractaLensCommand : << runs >>
-
-    enum ImageType {
-        SINGLE
-        ZOOM
-        ROTATION
-    }
-
     FractaLensCommand ..> FractalGeneratorBuilder : << configures >>
     FractaLensCommand ..> ImageType
 }
