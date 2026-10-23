@@ -1,0 +1,323 @@
+@startuml
+hide empty members
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+left to right direction
+
+' --------------- '
+' Complex Numbers '
+' --------------- '
+
+package complex {
+    interface IComplex {
+        + {abstract} getRealPart() : double
+        + {abstract} getImaginaryPart() : double
+        + {abstract} abs() : double
+        + {abstract} negate() : IComplex
+        + {abstract} conjugate() : IComplex
+        + {abstract} add(other : IComplex) : IComplex
+        + {abstract} subtract(other : IComplex) : IComplex
+        + {abstract} multiply(value : double) : IComplex
+        + {abstract} multiply(other : IComplex) : IComplex
+        + {abstract} divide(other : IComplex) : IComplex
+        + {abstract} power(p : int) : IComplex
+    }
+
+    class Complex {
+        - realPart : double {readOnly}
+        - imaginaryPart : double {readOnly}
+        + Complex(realPart : double, imaginaryPart : double)
+        + toString() : String
+        + equals(obj : Object) : boolean
+        + hashCode() : int
+    }
+
+    interface IComplexPlane {
+        + {abstract} asComplex(row : int, column : int) : IComplex
+    }
+
+    class ComplexPlane {
+        - height : int
+        - width : int
+        + ComplexPlane(height : int, width : int)
+    }
+
+    abstract class AbstractPlaneDecorator {
+        + AbstractPlaneDecorator(plane : IComplexPlane)
+        # getPlane() : IComplexPlane
+    }
+
+    class ZoomDecorator {
+        - zoom : double {readOnly}
+        + ZoomDecorator(zoom : double, plane : IComplexPlane)
+    }
+
+    class TranslationDecorator {
+        - center : IComplex {readOnly}
+        + TranslationDecorator(center : IComplex, plane : IComplexPlane)
+    }
+
+    Complex ..|> IComplex
+    ComplexPlane ..|> IComplexPlane
+    AbstractPlaneDecorator ..|> IComplexPlane
+    AbstractPlaneDecorator o--> "1" IComplexPlane : - plane
+    ZoomDecorator --|> AbstractPlaneDecorator
+    TranslationDecorator --|> AbstractPlaneDecorator
+    IComplexPlane ..> IComplex : << creates >>
+}
+
+' ----------------- '
+' Complex Sequences '
+' ----------------- '
+
+package complex.sequence {
+    interface "Iterable<IComplex>" as Iterable
+    interface "Iterator<IComplex>" as Iterator {
+        + {abstract} hasNext() : boolean
+        + {abstract} next() : IComplex
+    }
+
+    interface IComplexSequence {
+        + {abstract} computeNext(previous : IComplex) : IComplex
+    }
+
+    class JuliaSequence {
+        - first : IComplex {readOnly}
+        - max : int {readOnly}
+        - c : IComplex {readOnly}
+        + JuliaSequence(first : IComplex, max : int, c : IComplex)
+    }
+
+    class GenericComplexSequence {
+        - z0 : IComplex {readOnly}
+        - maxIterations : int {readOnly}
+        - operator : BinaryOperator<IComplex> {readOnly}
+        + GenericComplexSequence(operator : BinaryOperator<IComplex>, z0 : IComplex, maxIterations : int)
+    }
+
+    class ComplexSequenceIterator {
+        - current : IComplex
+        - maxIterations : int {readOnly}
+        - nbIterations : int
+        + ComplexSequenceIterator(sequence : IComplexSequence, first : IComplex, maxIterations : int)
+    }
+
+    class ComplexSequences << (S,#FF7700) static factory >> {
+        + {static} mandelbrot(z0, max) : IComplexSequence
+        + {static} multibrot(z0, max, p) : IComplexSequence
+        + {static} multiJulia(z0, max, c, p) : IComplexSequence
+        + {static} rotatedMultiJulia(z0, max, c, theta, p) : IComplexSequence
+        + {static} burningShip(z0, max, c) : IComplexSequence
+        + {static} generalizedBurningShip(z0, max, c, p) : IComplexSequence
+        + {static} tricorn(z0, max, c) : IComplexSequence
+        + {static} tricornGeneral(z0, max, c, p) : IComplexSequence
+        + {static} cubicJulia(z0, max, c) : IComplexSequence
+        + {static} mixedJuliaMandelbrot(z0, max, c) : IComplexSequence
+    }
+
+    enum ComplexSequenceType {
+        JULIA
+        MANDELBROT
+        BURNING_SHIP
+        GENERALIZED_BURNING_SHIP
+        TRICORN
+        GENERALIZED_TRICORN
+        MULTI_JULIA
+        MULTIBROT
+        CUBIC_JULIA
+        MIXED_JULIA_MANDELBROT
+        + getSequenceFactory() : BiFunction<IComplex, Integer, IComplexSequence>
+    }
+
+    IComplexSequence --|> Iterable
+    JuliaSequence ..|> IComplexSequence
+    GenericComplexSequence ..|> IComplexSequence
+    ComplexSequenceIterator ..|> Iterator
+    ComplexSequenceIterator --> "1" IComplexSequence : - sequence
+    IComplexSequence ..> ComplexSequenceIterator : << creates >>
+    ComplexSequences ..> GenericComplexSequence : << creates >>
+    ComplexSequenceType ..> ComplexSequences : << uses >>
+    ComplexSequenceType ..> JuliaSequence : << uses >>
+}
+
+' -------------- '
+' Color Palettes '
+' -------------- '
+
+package image.palette {
+    interface IPalette {
+        + {abstract} getColor(nbIteration : int, maxIteration : int) : Color
+    }
+
+    class GrayScale
+    class GradientPalette {
+        - start : Color {readOnly}
+        - end : Color {readOnly}
+        + GradientPalette(start : Color, end : Color)
+    }
+    class FixedPalette {
+        - colorList : List<Color> {readOnly}
+        + FixedPalette(colorList : List<Color>)
+    }
+
+    abstract class PaletteDecorator {
+        + PaletteDecorator(palette : IPalette)
+    }
+    class MaskDecorator {
+        - red : boolean {readOnly}
+        - green : boolean {readOnly}
+        - blue : boolean {readOnly}
+        + MaskDecorator(palette : IPalette, red : boolean, green : boolean, blue : boolean)
+    }
+    class InversionDecorator {
+        + InversionDecorator(palette : IPalette)
+    }
+
+    enum PaletteType {
+        + getPalette() : IPalette
+    }
+
+    GrayScale ..|> IPalette
+    GradientPalette ..|> IPalette
+    FixedPalette ..|> IPalette
+    PaletteDecorator ..|> IPalette
+    PaletteDecorator o--> "1" IPalette : # palette
+    MaskDecorator --|> PaletteDecorator
+    InversionDecorator --|> PaletteDecorator
+    PaletteType ..> IPalette : << provides >>
+}
+
+' -------------- '
+' Image Handling '
+' -------------- '
+
+package image {
+    class "java.awt.image.BufferedImage" as BufferedImage
+
+    interface IFractalImage {
+        + {abstract} getHeight() : int
+        + {abstract} getWidth() : int
+        + {abstract} setColor(row : int, column : int, color : Color) : void
+        + {abstract} saveAs(path : String) : void
+        + {abstract} asBufferedImage() : BufferedImage
+    }
+
+    class FractalImage {
+        + FractalImage(height : int, width : int)
+    }
+
+    FractalImage ..|> IFractalImage
+    FractalImage *--> "1" BufferedImage : - image
+
+    class BufferedImageAdapter {
+        + BufferedImageAdapter(image : BufferedImage)
+    }
+    BufferedImageAdapter ..|> IFractalImage
+    BufferedImageAdapter o--> "1" BufferedImage : - image
+}
+
+' ------------------ '
+' Fractal Generation '
+' ------------------ '
+
+package generator {
+    interface IFractalGenerator {
+        + {abstract} generateImage() : IFractalImage
+        + {abstract} computePixelColor(row : int, column : int) : Color
+        + {abstract} saveImage() : void
+    }
+
+    class FractalGenerator {
+        - nbMaxIteration : int {readOnly}
+        - filePath : String {readOnly}
+        - sequenceBiFunction : BiFunction<IComplex, Integer, IComplexSequence>
+        ~ FractalGenerator(builder : FractalGeneratorBuilder)
+    }
+
+    class CompositeFractalGenerator {
+        - delay : int {readOnly}
+        - outputFile : String {readOnly}
+        - images : List<BufferedImage> {readOnly}
+        + CompositeFractalGenerator(generators : List<IFractalGenerator>, delay : int, outputFile : String)
+    }
+
+    class FractalGeneratorBuilder {
+        - sequenceFactory : BiFunction<IComplex, Integer, IComplexSequence>
+        - width : int
+        - height : int
+        - zoom : double
+        - maxIterations : int
+        - outputFile : String
+        - frameCount : int
+        - zoomFactor : double
+        - frameDelay : int
+        - rotationStep : double
+        - center : IComplex
+        - rotationConstant : IComplex
+        + FractalGeneratorBuilder()
+        + usingSequence(factory : BiFunction<IComplex, Integer, IComplexSequence>) : FractalGeneratorBuilder
+        + usingSequence(type : ComplexSequenceType) : FractalGeneratorBuilder
+        + withSize(width : int, height : int) : FractalGeneratorBuilder
+        + zoomedBy(zoom : double) : FractalGeneratorBuilder
+        + centeredAt(center : IComplex) : FractalGeneratorBuilder
+        + withMaxIterations(maxIterations : int) : FractalGeneratorBuilder
+        + coloredWith(palette : IPalette) : FractalGeneratorBuilder
+        + coloredWith(type : PaletteType) : FractalGeneratorBuilder
+        + savedAs(outputFile : String) : FractalGeneratorBuilder
+        + animatedWithZoom(factor : double, frames : int) : FractalGeneratorBuilder
+        + animatedWithRotation(constant : IComplex, step : double, frames : int) : FractalGeneratorBuilder
+        + withFrameDelay(delay : int) : FractalGeneratorBuilder
+        + getImage() : IFractalImage
+        + getPlane() : IComplexPlane
+        + getMaxIterations() : int
+        + getPalette() : IPalette
+        + getOutputFile() : String
+        + getSequenceFactory() : BiFunction<IComplex, Integer, IComplexSequence>
+        + build() : IFractalGenerator
+        ~ zoomForFrame(initialZoom : double, k : int) : double
+        ~ sequenceForFrame(initialSequence : BiFunction<IComplex, Integer, IComplexSequence>, k : int) : BiFunction<IComplex, Integer, IComplexSequence>
+    }
+
+    FractalGenerator ..|> IFractalGenerator
+    CompositeFractalGenerator ..|> IFractalGenerator
+    CompositeFractalGenerator o--> "*" IFractalGenerator : - generators
+    FractalGeneratorBuilder ..> FractalGenerator : << creates >>
+    FractalGeneratorBuilder ..> CompositeFractalGenerator : << creates >>
+}
+
+' ---------------------- '
+' Command-Line Interface '
+' ---------------------- '
+
+package application {
+    class Main {
+        + {static} main(args : String[]) : void
+    }
+
+    enum ImageType {
+        SINGLE
+        ZOOM
+        ROTATION
+    }
+
+    Main ..> FractalGeneratorBuilder : << configures >>
+    Main ..> ImageType
+}
+
+' ------------------------------ '
+' Links between the packages     '
+' ------------------------------ '
+
+FractalGenerator --> "1" IFractalImage : - image
+FractalGenerator --> "1" IComplexPlane : - plane
+FractalGenerator --> "1" IPalette : - palette
+FractalGeneratorBuilder --> "1" IPalette : - palette
+FractalGenerator ..> IComplexSequence : << uses >>
+FractalGeneratorBuilder ..> ComplexSequenceType
+FractalGeneratorBuilder ..> PaletteType
+FractalGeneratorBuilder ..> ZoomDecorator : << creates >>
+FractalGeneratorBuilder ..> TranslationDecorator : << creates >>
+FractalGeneratorBuilder ..> BufferedImageAdapter : << creates >>
+Main ..> ComplexSequenceType : << parses -f >>
+Main ..> PaletteType : << parses -p >>
+@enduml
