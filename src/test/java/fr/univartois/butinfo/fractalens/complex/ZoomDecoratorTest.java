@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
  *
  * @version 0.1.0
  */
-public class ZoomDecoratorTest {
+class ZoomDecoratorTest {
 
   /**
    * Test method for {@link ZoomDecorator#asComplex(int, int)}.

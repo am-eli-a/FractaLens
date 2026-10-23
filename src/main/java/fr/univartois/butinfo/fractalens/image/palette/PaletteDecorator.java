@@ -23,7 +23,7 @@ public abstract class PaletteDecorator implements IPalette {
      *
      * @param palette The palette to decorate.
      */
-    public PaletteDecorator(IPalette palette) {
+    protected PaletteDecorator(IPalette palette) {
         this.palette = palette;
     }
 
