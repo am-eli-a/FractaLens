@@ -2,6 +2,7 @@ package fr.univartois.butinfo.fractalens.application;
 
 import java.util.concurrent.Callable;
 import fr.univartois.butinfo.fractalens.complex.sequence.ComplexSequenceType;
+import fr.univartois.butinfo.fractalens.image.ImageType;
 import fr.univartois.butinfo.fractalens.image.palette.PaletteType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -50,6 +51,12 @@ public class FractaLensCommand implements Callable<Integer> {
 
   @Option(names = "--help", usageHelp = true, description = "Displays this help message.")
   private boolean helpRequested;
+
+  @Option(names = {"-d", "--delay"}, defaultValue = "100", description = "The delay between two images of an animation, in milliseconds (default: ${DEFAULT-VALUE}).")
+  private int delay;
+
+  @Option(names = {"-z", "--zoom-factor"}, defaultValue = "0.9", description = "The factor applied to the scale between two images of a zoom animation (default: ${DEFAULT-VALUE}).")
+  private double zoomFactor;
 
   @Override
   public Integer call() {
