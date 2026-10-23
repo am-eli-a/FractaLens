@@ -82,9 +82,7 @@ public class FractalImage implements IFractalImage {
      */
     @Override
     public void saveAs(String path) throws IOException {
-        if (!ImageIO.write(image, "png", new File(path))) {
-            throw new IOException("Impossible de sauvegarder");
-        }
+        ImageIO.write(image, "png", new File(path));
     }
 
     /**
