@@ -10,7 +10,8 @@ transformations.
 
 FractaLens is used from the command line. Every setting of the generated image
 is given as an option, so that any fractal can be generated without modifying
-the code of the application.
+the code of the application. The options are read with the
+[picocli](https://picocli.info/) library.
 
 ### Running the application
 
@@ -29,25 +30,30 @@ help message describing all the available options.
 
 | Option | Argument | Description | Default value |
 |--------|----------|-------------|---------------|
-| `-f`, `--fractal-name` | `<name>` | The name of the fractal to generate (see the list below). | `MANDELBROT` |
-| `-n`, `--nb-iterations` | `<number>` | The maximum number of iterations computed for each pixel. | `64` |
-| `-h`, `--height` | `<pixels>` | The height of the image, in pixels. | `400` |
-| `-w`, `--width` | `<pixels>` | The width of the image, in pixels. | `800` |
-| `-s`, `--scale` | `<zoom>` | The scale applied on the complex plane (the size of a pixel in the plane). | `0.004` |
-| `-x`, `--focus-x` | `<number>` | The real part of the point at the center of the image. | `0` |
-| `-y`, `--focus-y` | `<number>` | The imaginary part of the point at the center of the image. | `0` |
-| `-p`, `--palette-name` | `<name>` | The name of the color palette to use (see the list below). | `GRAY_SCALE` |
+| `-f`, `--fractal-name` | `<name>` | The name of the fractal to generate (see the list below). | *required* |
+| `-n`, `--nb-iterations` | `<number>` | The maximum number of iterations computed for each pixel. | *required* |
+| `-h`, `--height` | `<pixels>` | The height of the image, in pixels. | *required* |
+| `-w`, `--width` | `<pixels>` | The width of the image, in pixels. | *required* |
+| `-s`, `--scale` | `<zoom>` | The scale applied on the complex plane (the size of a pixel in the plane). | *required* |
+| `-x`, `--focus-x` | `<number>` | The real part of the point at the center of the image. | *required* |
+| `-y`, `--focus-y` | `<number>` | The imaginary part of the point at the center of the image. | *required* |
+| `-p`, `--palette-name` | `<name>` | The name of the color palette to use (see the list below). | *required* |
 | `-t`, `--type` | `<type>` | The type of image to generate: `SINGLE`, `ZOOM` or `ROTATION`. | `SINGLE` |
-| `-i`, `--image-count` | `<number>` | The number of images of an animation (`ZOOM` or `ROTATION` only). | `60` |
-| `-o`, `--output` | `<file>` | The name of the file in which the image is saved (`.png` or `.gif`). | `fractal.png` |
-| `--zoom-factor` | `<factor>` | The factor applied to the scale between two images of a `ZOOM` animation (between 0 and 1). | `0.92` |
-| `--constant-x` | `<number>` | The real part of the constant c of Julia's sequence (used with `-f JULIA` and with `-t ROTATION`). | `-0.4` |
-| `--constant-y` | `<number>` | The imaginary part of the constant c of Julia's sequence (used with `-f JULIA` and with `-t ROTATION`). | `0.6` |
-| `--delay` | `<ms>` | The delay between two images of an animation, in milliseconds. | `80` |
+| `-i`, `--image-count` | `<number>` | The number of images of an animation (`ZOOM` or `ROTATION` only). | `50` |
+| `-z`, `--zoom-factor` | `<factor>` | The factor applied to the scale between two images of a `ZOOM` animation (between 0 and 1). | `0.9` |
+| `-d`, `--delay` | `<ms>` | The delay between two images of an animation, in milliseconds. | `100` |
+| `--c-real` | `<number>` | The real part of the constant c of the sequence. | `-0.4` |
+| `--c-imaginary` | `<number>` | The imaginary part of the constant c of the sequence. | `0.6` |
+| `-o`, `--output` | `<file>` | The name of the file in which the image is saved (`.png` or `.gif`). | *required* |
 | `--help` | | Prints the help message and exits. | |
 
 > `-h` is used for the height of the image, so the help message is only
 > available through `--help`.
+
+> Negative values must be written with `=`, for example `-x=-0.75`, so that
+> they are not mistaken for an option.
+
+> The names of the fractals, palettes and types are case-sensitive.
 
 ### Available fractals
 
@@ -56,7 +62,7 @@ enumeration:
 
 | Name | Sequence |
 |------|----------|
-| `JULIA` | z² + c, with c given by `--constant-x` and `--constant-y` (-0.4 + 0.6i by default) |
+| `JULIA` | z² + c, with c = -0.4 + 0.6i |
 | `MANDELBROT` | z² + z₀ |
 | `MULTI_JULIA` | z³ + c, with c = -0.4 + 0.6i |
 | `MULTIBROT` | z³ + z₀ |
@@ -67,8 +73,9 @@ enumeration:
 | `CUBIC_JULIA` | z³ + z² + c, with c = -0.4 + 0.6i |
 | `MIXED_JULIA_MANDELBROT` | z² + c × z₀, with c = -0.4 + 0.6i |
 
-A `ROTATION` animation always uses Julia's sequence, whose initial constant is
-given by `--constant-x` and `--constant-y`.
+The constant c of Julia's sequence can be changed with `--c-real` and
+`--c-imaginary`. A `ROTATION` animation always uses Julia's sequence, whose
+initial constant is given by these two options.
 
 ### Available palettes
 
@@ -77,27 +84,28 @@ enumeration:
 
 | Name | Palette |
 |------|---------|
-| `GRAY_SCALE` | Shades of gray, from white to black. |
-| *(to complete)* | *(one line per constant of `PaletteType`)* |
+| `FIXED` | A fixed palette going from white to black, through three shades of blue. |
+| `GRADIENT` | A gradient going from dark green to black. |
+| `GRAYSCALE` | Shades of gray, from white to black. |
 
 ### Examples
 
 A static image of the Mandelbrot set, centered on -0.75:
 
 ```bash
-./gradlew run --args="-f MANDELBROT -w 800 -h 600 -s 0.001 -x -0.75 -y 0 -n 250 -p GRAY_SCALE -o mandelbrot.png"
+./gradlew run --args="-f MANDELBROT -w 800 -h 600 -s 0.001 -x=-0.75 -y 0 -n 250 -p GRAYSCALE -o mandelbrot.png"
 ```
 
 An animated zoom on the Mandelbrot set:
 
 ```bash
-./gradlew run --args="-f MANDELBROT -t ZOOM -i 120 -w 200 -h 200 -s 0.015 -x -0.743643887037151 -y 0.131825904205330 -n 500 --zoom-factor 0.92 --delay 80 -o mandelbrot-zoom.gif"
+./gradlew run --args="-f MANDELBROT -t ZOOM -i 120 -w 200 -h 200 -s 0.015 -x=-0.743643887037151 -y 0.131825904205330 -n 500 -p GRADIENT -z 0.92 -d 80 -o mandelbrot-zoom.gif"
 ```
 
 An animated rotation of Julia's set, starting from c = 0.7885:
 
 ```bash
-./gradlew run --args="-t ROTATION -i 72 -w 200 -h 200 -s 0.016 -x 0 -y 0 -n 50 --constant-x 0.7885 --constant-y 0 --delay 60 -o julia-rotation.gif"
+./gradlew run --args="-f JULIA -t ROTATION -i 72 -w 200 -h 200 -s 0.016 -x 0 -y 0 -n 50 -p FIXED --c-real 0.7885 --c-imaginary 0 -d 60 -o julia-rotation.gif"
 ```
 
 > Animations can take a long time to generate and use a lot of memory: keep the
@@ -109,11 +117,11 @@ Each image generated during the SAÉ can be obtained with the following commands
 
 | Sprint | Image | Command |
 |--------|-------|---------|
-| 2 | Julia, c = -0.4 + 0.6i, gray scale | `-f JULIA -w 800 -h 600 -s 0.004 -n 100 -p GRAY_SCALE -o sprint2.png` |
+| 2 | Julia, c = -0.4 + 0.6i, gray scale | `-f JULIA -w 800 -h 600 -s 0.004 -x 0 -y 0 -n 100 -p GRAYSCALE -o sprint2.png` |
 | 3 | Julia, c = -0.4 + 0.6i, centered on 0.1 + 0.6i | `-f JULIA -w 800 -h 800 -s 0.001 -x 0.1 -y 0.6 -n 250 -p <palette> -o sprint3-1.png` |
-| 3 | Julia, c = 0.285 + 0.01i, centered on -0.47 - 0.21i | `-f JULIA --constant-x 0.285 --constant-y 0.01 -w 800 -h 800 -s 0.001 -x -0.47 -y -0.21 -n 250 -p <palette> -o sprint3-2.png` |
-| 4 | Mandelbrot, centered on -0.75 | `-f MANDELBROT -w 800 -h 600 -s 0.001 -x -0.75 -y 0 -n 250 -o sprint4-1.png` |
-| 4 | Burning Ship, centered on -1.755 - 0.03i | `-f BURNING_SHIP -w 800 -h 800 -s 0.0001 -x -1.755 -y -0.03 -n 64 -o sprint4-2.png` |
+| 3 | Julia, c = 0.285 + 0.01i, centered on -0.47 - 0.21i | `-f JULIA --c-real 0.285 --c-imaginary 0.01 -w 800 -h 800 -s 0.001 -x=-0.47 -y=-0.21 -n 250 -p <palette> -o sprint3-2.png` |
+| 4 | Mandelbrot, centered on -0.75 | `-f MANDELBROT -w 800 -h 600 -s 0.001 -x=-0.75 -y 0 -n 250 -p <palette> -o sprint4-1.png` |
+| 4 | Burning Ship, centered on -1.755 - 0.03i | `-f BURNING_SHIP -w 800 -h 800 -s 0.0001 -x=-1.755 -y=-0.03 -n 64 -p <palette> -o sprint4-2.png` |
 | 6 | Zoom on Mandelbrot | see the examples above |
 | 6 | Rotation of Julia | see the examples above |
 
@@ -417,14 +425,38 @@ package application {
         + {static} main(args : String[]) : void
     }
 
+    class FractaLensCommand {
+        - fractalName : ComplexSequenceType
+        - nbIterations : int
+        - height : int
+        - width : int
+        - scale : double
+        - focusX : double
+        - focusY : double
+        - paletteName : PaletteType
+        - type : ImageType
+        - imageCount : int
+        - zoomFactor : double
+        - delay : int
+        - cReal : double
+        - cImaginary : double
+        - output : String
+        + call() : Integer
+    }
+
+    interface "Callable<Integer>" as Callable
+
+    FractaLensCommand ..|> Callable
+    Main ..> FractaLensCommand : << runs >>
+
     enum ImageType {
         SINGLE
         ZOOM
         ROTATION
     }
 
-    Main ..> FractalGeneratorBuilder : << configures >>
-    Main ..> ImageType
+    FractaLensCommand ..> FractalGeneratorBuilder : << configures >>
+    FractaLensCommand ..> ImageType
 }
 
 ' ------------------------------ '
@@ -441,8 +473,8 @@ FractalGeneratorBuilder ..> PaletteType
 FractalGeneratorBuilder ..> ZoomDecorator : << creates >>
 FractalGeneratorBuilder ..> TranslationDecorator : << creates >>
 FractalGeneratorBuilder ..> BufferedImageAdapter : << creates >>
-Main ..> ComplexSequenceType : << parses -f >>
-Main ..> PaletteType : << parses -p >>
+FractaLensCommand ..> ComplexSequenceType : << parses -f >>
+FractaLensCommand ..> PaletteType : << parses -p >>
 ```
 
 ## Feature list
