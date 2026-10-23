@@ -26,7 +26,6 @@ package fr.univartois.butinfo.fractalens.complex;
 /**
  * The IComplex interface defines the methods for making operations on complex numbers.
  *
- * @author Romain Wallon
  *
  * @version 0.1.0
  */
@@ -112,5 +111,12 @@ public interface IComplex {
      */
     IComplex divide(IComplex other);
 
+    /**
+     * Raises this complex number to a given power.
+     *
+     * @param p The power (a non-negative integer).
+     *
+     * @return The result of {@code this^p}.
+     */
     IComplex power(int p);
 }

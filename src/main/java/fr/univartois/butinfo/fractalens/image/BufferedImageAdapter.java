@@ -32,7 +32,6 @@ import java.io.IOException;
  * The BufferedImageAdapter class is an adapter allowing to use a
  * {@link BufferedImage} through the {@link IFractalImage} interface.
  *
- * @author Baptiste Wagee
  *
  * @version 0.1.0
  */
@@ -104,6 +103,13 @@ public class BufferedImageAdapter implements IFractalImage {
     ImageIO.write(image, "png", new File(path));
   }
 
+  /**
+   * Gives the {@link BufferedImage} adapted by this object.
+   *
+   * @return The adapted image.
+   *
+   * @see IFractalImage#asBufferedImage()
+   */
   @Override
   public BufferedImage asBufferedImage() {
     return image;

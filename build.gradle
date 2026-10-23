@@ -55,6 +55,6 @@ jacocoTestReport {
 sonar {
     properties {
         property("sonar.host.url", "https://sonarqube.univ-artois.fr")
-        property("sonar.projectKey", "fractalens-TESINITIALES")
+        property("sonar.projectKey", "fractalens-BW-MF-NS-AD")
     }
 }
