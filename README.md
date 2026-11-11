@@ -1,572 +1,88 @@
-# FractaLens - A Fractal Generator Library Developed in Lens.
+# FractaLens
 
-This project provides a *Java* library for generating fractal images.
-It allows users to choose from a variety of complex sequences, including the
-Julia set, Mandelbrot set, and other generalized sequences, to create
-static or animated fractal images using different color palettes and
-transformations.
+Une bibliothèque Java et un outil en ligne de commande pour générer des images de fractales (statiques ou animées) à partir de plusieurs suites complexes et palettes de couleurs.
 
-## Usage
-
-FractaLens is used from the command line. Every setting of the generated image
-is given as an option, so that any fractal can be generated without modifying
-the code of the application. The options are read with the
-[picocli](https://picocli.info/) library.
-
-### Running the application
-
-From the root of the project, run:
-
-```bash
-./gradlew run --args="<options>"
-```
-
-On Windows (PowerShell), use `.\gradlew` instead of `./gradlew`.
-
-If no option is given, or if an option is invalid, the application prints the
-help message describing all the available options.
-
-### Options
-
-| Option | Argument | Description | Default value |
-|--------|----------|-------------|---------------|
-| `-f`, `--fractal-name` | `<name>` | The name of the fractal to generate (see the list below). | *required* |
-| `-n`, `--nb-iterations` | `<number>` | The maximum number of iterations computed for each pixel. | *required* |
-| `-h`, `--height` | `<pixels>` | The height of the image, in pixels. | *required* |
-| `-w`, `--width` | `<pixels>` | The width of the image, in pixels. | *required* |
-| `-s`, `--scale` | `<zoom>` | The scale applied on the complex plane (the size of a pixel in the plane). | *required* |
-| `-x`, `--focus-x` | `<number>` | The real part of the point at the center of the image. | *required* |
-| `-y`, `--focus-y` | `<number>` | The imaginary part of the point at the center of the image. | *required* |
-| `-p`, `--palette-name` | `<name>` | The name of the color palette to use (see the list below). | *required* |
-| `-t`, `--type` | `<type>` | The type of image to generate: `SINGLE`, `ZOOM` or `ROTATION`. | `SINGLE` |
-| `-i`, `--image-count` | `<number>` | The number of images of an animation (`ZOOM` or `ROTATION` only). | `50` |
-| `-z`, `--zoom-factor` | `<factor>` | The factor applied to the scale between two images of a `ZOOM` animation (between 0 and 1). | `0.9` |
-| `-d`, `--delay` | `<ms>` | The delay between two images of an animation, in milliseconds. | `100` |
-| `--c-real` | `<number>` | The real part of the constant c of the sequence. | `-0.4` |
-| `--c-imaginary` | `<number>` | The imaginary part of the constant c of the sequence. | `0.6` |
-| `-o`, `--output` | `<file>` | The name of the file in which the image is saved (`.png` or `.gif`). | *required* |
-| `--help` | | Prints the help message and exits. | |
-
-> `-h` is used for the height of the image, so the help message is only
-> available through `--help`.
-
-> Negative values must be written with `=`, for example `-x=-0.75`, so that
-> they are not mistaken for an option.
-
-> The names of the fractals, palettes and types are case-sensitive.
-
-### Available fractals
-
-The name given to `-f` is the name of a constant of the `ComplexSequenceType`
-enumeration:
-
-| Name | Sequence |
-|------|----------|
-| `JULIA` | z² + c, with c = -0.4 + 0.6i |
-| `MANDELBROT` | z² + z₀ |
-| `MULTI_JULIA` | z³ + c, with c = -0.4 + 0.6i |
-| `MULTIBROT` | z³ + z₀ |
-| `BURNING_SHIP` | (\|Re(z)\| + i\|Im(z)\|)² + c, with c = -0.4 + 0.6i |
-| `GENERALIZED_BURNING_SHIP` | (\|Re(z)\| + i\|Im(z)\|)³ + c, with c = -0.4 + 0.6i |
-| `TRICORN` | conj(z)² + c, with c = -0.4 + 0.6i |
-| `GENERALIZED_TRICORN` | conj(z)³ + c, with c = -0.4 + 0.6i |
-| `CUBIC_JULIA` | z³ + z² + c, with c = -0.4 + 0.6i |
-| `MIXED_JULIA_MANDELBROT` | z² + c × z₀, with c = -0.4 + 0.6i |
-
-The constant c of Julia's sequence can be changed with `--c-real` and
-`--c-imaginary`. A `ROTATION` animation always uses Julia's sequence, whose
-initial constant is given by these two options.
-
-### Available palettes
-
-The name given to `-p` is the name of a constant of the `PaletteType`
-enumeration:
-
-| Name | Palette |
-|------|---------|
-| `GRAYSCALE` | Shades of gray, from white to black. |
-| `GRADIENT` | A gradient going from dark green to black. |
-| `FIXED` | A fixed palette going from white to black, through three shades of blue. |
-| `FIRE` | A fixed palette going from pale yellow to black, through yellow, orange and red. |
-| `NIGHT` | A fixed palette going from dark blue to black, through purple, pink and gold. |
-| `FOREST` | A fixed palette going from dark green to black, through lighter greens. |
-| `INVERTED_CYAN` | The gray scale palette, inverted, keeping only its green and blue components. |
-
-### Examples
-
-A static image of the Mandelbrot set, centered on -0.75:
+## Démarrage rapide
 
 ```bash
 ./gradlew run --args="-f MANDELBROT -w 800 -h 600 -s 0.001 -x=-0.75 -y 0 -n 250 -p GRAYSCALE -o mandelbrot.png"
 ```
 
-An animated zoom on the Mandelbrot set:
+Sous Windows (PowerShell), utiliser `.\gradlew`. Sans option (ou avec une option invalide), le message d'aide est affiché.
+
+## Options
+
+| Option | Description | Valeur par défaut |
+|--------|-------------|-------------------|
+| `-f`, `--fractal-name` | Fractale à générer | *obligatoire* |
+| `-p`, `--palette-name` | Palette de couleurs | *obligatoire* |
+| `-n`, `--nb-iterations` | Nombre maximal d'itérations par pixel | *obligatoire* |
+| `-w`, `--width` / `-h`, `--height` | Taille de l'image en pixels | *obligatoire* |
+| `-s`, `--scale` | Taille d'un pixel dans le plan complexe | *obligatoire* |
+| `-x`, `--focus-x` / `-y`, `--focus-y` | Centre de l'image (partie réelle / imaginaire) | *obligatoire* |
+| `-o`, `--output` | Fichier de sortie (`.png` ou `.gif`) | *obligatoire* |
+| `-t`, `--type` | `SINGLE`, `ZOOM` ou `ROTATION` | `SINGLE` |
+| `-i`, `--image-count` | Nombre d'images (animations) | `50` |
+| `-z`, `--zoom-factor` | Facteur appliqué à l'échelle entre deux images d'un `ZOOM` (entre 0 et 1) | `0.9` |
+| `-d`, `--delay` | Délai entre deux images (ms) | `100` |
+| `--c-real`, `--c-imaginary` | Constante c de la suite | `-0.4`, `0.6` |
+| `--help` | Affiche le message d'aide | |
+
+Remarques :
+- `-h` correspond à la hauteur, l'aide n'est donc disponible que via `--help`.
+- Les valeurs négatives s'écrivent avec `=` (ex. `-x=-0.75`).
+- Les noms des fractales, palettes et types sont sensibles à la casse.
+- Les animations sont lourdes : garder des images petites (de 200×200 à 300×300).
+
+## Fractales et palettes
+
+**Fractales** (`-f`) : `JULIA`, `MANDELBROT`, `MULTI_JULIA`, `MULTIBROT`, `BURNING_SHIP`, `GENERALIZED_BURNING_SHIP`, `TRICORN`, `GENERALIZED_TRICORN`, `CUBIC_JULIA`, `MIXED_JULIA_MANDELBROT`.
+
+**Palettes** (`-p`) : `GRAYSCALE`, `GRADIENT`, `FIXED`, `FIRE`, `NIGHT`, `FOREST`, `INVERTED_CYAN`.
+
+Une animation `ROTATION` utilise toujours la suite de Julia, dont la constante initiale est donnée par `--c-real` et `--c-imaginary`.
+
+## Exemples
 
 ```bash
+# Zoom sur l'ensemble de Mandelbrot
 ./gradlew run --args="-f MANDELBROT -t ZOOM -i 120 -w 200 -h 200 -s 0.015 -x=-0.743643887037151 -y 0.131825904205330 -n 500 -p GRADIENT -z 0.92 -d 80 -o mandelbrot-zoom.gif"
-```
 
-An animated rotation of Julia's set, starting from c = 0.7885:
-
-```bash
+# Rotation de l'ensemble de Julia
 ./gradlew run --args="-f JULIA -t ROTATION -i 72 -w 200 -h 200 -s 0.016 -x 0 -y 0 -n 50 -p FIXED --c-real 0.7885 --c-imaginary 0 -d 60 -o julia-rotation.gif"
 ```
 
-> Animations can take a long time to generate and use a lot of memory: keep the
-> images small (200 × 200 to 300 × 300 pixels).
+Les commandes permettant d'obtenir toutes les images de la SAÉ (sprints 2 à 6) sont listées dans la documentation complète.
 
-### Images of the SAÉ
+## Animations du concours
 
-Each image generated during the SAÉ can be obtained with the following commands.
+La classe `ContestAnimations` (lancer son `main` depuis l'IDE) génère trois animations qui ne sont pas toutes descriptibles avec la ligne de commande :
 
-| Sprint | Image | Command |
-|--------|-------|---------|
-| 2 | Julia, c = -0.4 + 0.6i, gray scale | `-f JULIA -w 800 -h 600 -s 0.004 -x 0 -y 0 -n 100 -p GRAYSCALE -o sprint2.png` |
-| 3 | Julia, c = -0.4 + 0.6i, centered on 0.1 + 0.6i | `-f JULIA -w 800 -h 800 -s 0.001 -x 0.1 -y 0.6 -n 250 -p FIRE -o sprint3-1.png` |
-| 3 | Julia, c = 0.285 + 0.01i, centered on -0.47 - 0.21i | `-f JULIA --c-real 0.285 --c-imaginary 0.01 -w 800 -h 800 -s 0.001 -x=-0.47 -y=-0.21 -n 250 -p INVERTED_CYAN -o sprint3-2.png` |
-| 4 | Mandelbrot, centered on -0.75 | `-f MANDELBROT -w 800 -h 600 -s 0.001 -x=-0.75 -y 0 -n 250 -p FIRE -o sprint4-1.png` |
-| 4 | Burning Ship, centered on -1.755 - 0.03i | `-f BURNING_SHIP -w 800 -h 800 -s 0.0001 -x=-1.755 -y=-0.03 -n 64 -p GRAYSCALE -o sprint4-2.png` |
-| 6 | Zoom on Mandelbrot | `-f MANDELBROT -t ZOOM -i 120 -w 200 -h 200 -s 0.015 -x=-0.743643887037151 -y 0.131825904205330 -n 500 -p FIRE -z 0.92 -d 80 -o sprint6-1.gif` |
-| 6 | Rotation of Julia | `-f JULIA -t ROTATION -i 72 -w 200 -h 200 -s 0.016 -x 0 -y 0 -n 50 -p FOREST --c-real 0.7885 --c-imaginary 0 -d 60 -o sprint6-2.gif` |
+- `contest-julia.gif` : rotation complète de la constante de Julia, à partir de c = 0,7885 (palette `FOREST`).
+- `contest-mandelbrot.gif` : zoom infini et sans coupure sur le point de Feigenbaum (zoom du facteur δ ≈ 4,669 avec le nombre d'itérations doublé).
+- `contest-free.gif` : rotation complète de la constante du Burning Ship généralisé (puissance 3, |c| = 0,6).
 
-Each command is given to the application with `./gradlew run --args="<command>"`.
+## Architecture
 
-### Contest animations
+La bibliothèque est découpée en packages :
 
-The animations proposed for the image contest of the SAÉ are generated by the
-`ContestAnimations` class, which uses the builder directly (some of them cannot
-be described with the options of the command line). Run its `main` method from
-your IDE: it generates the following files.
+- `complex` : nombres complexes (`IComplex`) et plan complexe, avec des décorateurs de zoom et de translation.
+- `complex.sequence` : suites (`IComplexSequence`), leur itérateur, la fabrique `ComplexSequences` et l'énumération `ComplexSequenceType`.
+- `image.palette` : palettes (`IPalette`) comme le niveau de gris, le dégradé et les palettes fixes, avec des décorateurs de masque et d'inversion, listées dans `PaletteType`.
+- `image` : `IFractalImage`, adossée à une `BufferedImage`, et `ImageType`.
+- `generator` : `FractalGenerator` (image seule), `CompositeFractalGenerator` (animations) et `FractalGeneratorBuilder`.
+- `application` : l'interface en ligne de commande `picocli` (`Main`, `FractaLensCommand`) et `ContestAnimations`.
 
-| File | Category | Animation |
-|------|----------|-----------|
-| `contest-julia.gif` | Julia | A full rotation of the constant c of Julia's sequence, starting from c = 0.7885, with the `FOREST` palette. |
-| `contest-mandelbrot.gif` | Mandelbrot | An infinite zoom on the Feigenbaum point of the Mandelbrot set (c ≈ -1.4011551890920). Around this point, the set is self-similar: zooming by the Feigenbaum constant (δ ≈ 4.669) gives the same image, provided that the maximum number of iterations is doubled. The last image of the animation thus joins the first one, and the animation loops seamlessly. |
-| `contest-free.gif` | Free | A full rotation of the constant c of the generalized Burning Ship sequence of power 3, with \|c\| = 0.6. |
+Design patterns utilisés : Strategy (suites, palettes), Decorator (plan, palettes), Iterator, Static Factory Method, Adapter (`BufferedImage`), Composite (animations), Builder (configuration du générateur) et Facade (ligne de commande).
 
-## Overview
+## Qualité
 
-This library is composed of the following classes:
+- Tests : `./gradlew test` (rapport de couverture dans `build/reports/jacoco/test/html/index.html`)
+- Analyse statique : `./gradlew sonar -Dsonar.token=<votre token>`
 
-```plantuml
-hide empty members
-skinparam packageStyle rectangle
-skinparam classAttributeIconSize 0
-left to right direction
+## Contributeurs
 
-' --------------- '
-' Complex Numbers '
-' --------------- '
-
-package complex {
-    interface IComplex {
-        + {abstract} getRealPart() : double
-        + {abstract} getImaginaryPart() : double
-        + {abstract} abs() : double
-        + {abstract} negate() : IComplex
-        + {abstract} conjugate() : IComplex
-        + {abstract} add(other : IComplex) : IComplex
-        + {abstract} subtract(other : IComplex) : IComplex
-        + {abstract} multiply(value : double) : IComplex
-        + {abstract} multiply(other : IComplex) : IComplex
-        + {abstract} divide(other : IComplex) : IComplex
-        + {abstract} power(p : int) : IComplex
-    }
-
-    class Complex {
-        - realPart : double {readOnly}
-        - imaginaryPart : double {readOnly}
-        + Complex(realPart : double, imaginaryPart : double)
-        + toString() : String
-        + equals(obj : Object) : boolean
-        + hashCode() : int
-    }
-
-    interface IComplexPlane {
-        + {abstract} asComplex(row : int, column : int) : IComplex
-    }
-
-    class ComplexPlane {
-        - height : int
-        - width : int
-        + ComplexPlane(height : int, width : int)
-    }
-
-    abstract class AbstractPlaneDecorator {
-        + AbstractPlaneDecorator(plane : IComplexPlane)
-        # getPlane() : IComplexPlane
-    }
-
-    class ZoomDecorator {
-        - zoom : double {readOnly}
-        + ZoomDecorator(zoom : double, plane : IComplexPlane)
-    }
-
-    class TranslationDecorator {
-        - center : IComplex {readOnly}
-        + TranslationDecorator(center : IComplex, plane : IComplexPlane)
-    }
-
-    Complex ..|> IComplex
-    ComplexPlane ..|> IComplexPlane
-    AbstractPlaneDecorator ..|> IComplexPlane
-    AbstractPlaneDecorator o--> "1" IComplexPlane : - plane
-    ZoomDecorator --|> AbstractPlaneDecorator
-    TranslationDecorator --|> AbstractPlaneDecorator
-    IComplexPlane ..> IComplex : << creates >>
-}
-
-' ----------------- '
-' Complex Sequences '
-' ----------------- '
-
-package complex.sequence {
-    interface "Iterable<IComplex>" as Iterable
-    interface "Iterator<IComplex>" as Iterator {
-        + {abstract} hasNext() : boolean
-        + {abstract} next() : IComplex
-    }
-
-    interface IComplexSequence {
-        + {abstract} computeNext(previous : IComplex) : IComplex
-    }
-
-    class JuliaSequence {
-        - first : IComplex {readOnly}
-        - max : int {readOnly}
-        - c : IComplex {readOnly}
-        + JuliaSequence(first : IComplex, max : int, c : IComplex)
-    }
-
-    class GenericComplexSequence {
-        - z0 : IComplex {readOnly}
-        - maxIterations : int {readOnly}
-        - operator : BinaryOperator<IComplex> {readOnly}
-        + GenericComplexSequence(operator : BinaryOperator<IComplex>, z0 : IComplex, maxIterations : int)
-    }
-
-    class ComplexSequenceIterator {
-        - current : IComplex
-        - maxIterations : int {readOnly}
-        - nbIterations : int
-        + ComplexSequenceIterator(sequence : IComplexSequence, first : IComplex, maxIterations : int)
-    }
-
-    class ComplexSequences << (S,#FF7700) static factory >> {
-        + {static} mandelbrot(z0, max) : IComplexSequence
-        + {static} multibrot(z0, max, p) : IComplexSequence
-        + {static} multiJulia(z0, max, c, p) : IComplexSequence
-        + {static} rotatedMultiJulia(z0, max, c, theta, p) : IComplexSequence
-        + {static} burningShip(z0, max, c) : IComplexSequence
-        + {static} generalizedBurningShip(z0, max, c, p) : IComplexSequence
-        + {static} tricorn(z0, max, c) : IComplexSequence
-        + {static} tricornGeneral(z0, max, c, p) : IComplexSequence
-        + {static} cubicJulia(z0, max, c) : IComplexSequence
-        + {static} mixedJuliaMandelbrot(z0, max, c) : IComplexSequence
-    }
-
-    enum ComplexSequenceType {
-        JULIA
-        MANDELBROT
-        BURNING_SHIP
-        GENERALIZED_BURNING_SHIP
-        TRICORN
-        GENERALIZED_TRICORN
-        MULTI_JULIA
-        MULTIBROT
-        CUBIC_JULIA
-        MIXED_JULIA_MANDELBROT
-        - sequenceFactory : BiFunction<IComplex, Integer, IComplexSequence> {readOnly}
-        + getSequenceFactory() : BiFunction<IComplex, Integer, IComplexSequence>
-    }
-
-    IComplexSequence --|> Iterable
-    JuliaSequence ..|> IComplexSequence
-    GenericComplexSequence ..|> IComplexSequence
-    ComplexSequenceIterator ..|> Iterator
-    ComplexSequenceIterator --> "1" IComplexSequence : - sequence
-    IComplexSequence ..> ComplexSequenceIterator : << creates >>
-    ComplexSequences ..> GenericComplexSequence : << creates >>
-    ComplexSequenceType ..> ComplexSequences : << uses >>
-    ComplexSequenceType ..> JuliaSequence : << uses >>
-}
-
-' -------------- '
-' Color Palettes '
-' -------------- '
-
-package image.palette {
-    interface IPalette {
-        + {abstract} getColor(nbIteration : int, maxIteration : int) : Color
-    }
-
-    class GrayScale
-    class GradientPalette {
-        - start : Color {readOnly}
-        - end : Color {readOnly}
-        + GradientPalette(start : Color, end : Color)
-    }
-    class FixedPalette {
-        - colorList : List<Color> {readOnly}
-        + FixedPalette(colorList : List<Color>)
-    }
-
-    abstract class PaletteDecorator {
-        + PaletteDecorator(palette : IPalette)
-    }
-    class MaskDecorator {
-        - red : boolean {readOnly}
-        - green : boolean {readOnly}
-        - blue : boolean {readOnly}
-        + MaskDecorator(palette : IPalette, red : boolean, green : boolean, blue : boolean)
-    }
-    class InversionDecorator {
-        + InversionDecorator(palette : IPalette)
-    }
-
-    enum PaletteType {
-        GRAYSCALE
-        GRADIENT
-        FIXED
-        FIRE
-        NIGHT
-        FOREST
-        INVERTED_CYAN
-        - paletteFactory : Supplier<IPalette> {readOnly}
-        + getPalette() : IPalette
-    }
-
-    GrayScale ..|> IPalette
-    GradientPalette ..|> IPalette
-    FixedPalette ..|> IPalette
-    PaletteDecorator ..|> IPalette
-    PaletteDecorator o--> "1" IPalette : # palette
-    MaskDecorator --|> PaletteDecorator
-    InversionDecorator --|> PaletteDecorator
-    PaletteType ..> IPalette : << provides >>
-    PaletteType ..> GrayScale : << creates >>
-    PaletteType ..> GradientPalette : << creates >>
-    PaletteType ..> FixedPalette : << creates >>
-    PaletteType ..> MaskDecorator : << creates >>
-    PaletteType ..> InversionDecorator : << creates >>
-}
-
-' -------------- '
-' Image Handling '
-' -------------- '
-
-package image {
-    class "java.awt.image.BufferedImage" as BufferedImage
-
-    interface IFractalImage {
-        + {abstract} getHeight() : int
-        + {abstract} getWidth() : int
-        + {abstract} setColor(row : int, column : int, color : Color) : void
-        + {abstract} saveAs(path : String) : void
-        + {abstract} asBufferedImage() : BufferedImage
-    }
-
-    class FractalImage {
-        + FractalImage(height : int, width : int)
-    }
-
-    FractalImage ..|> IFractalImage
-    FractalImage *--> "1" BufferedImage : - image
-
-    class BufferedImageAdapter {
-        + BufferedImageAdapter(image : BufferedImage)
-    }
-    BufferedImageAdapter ..|> IFractalImage
-    BufferedImageAdapter o--> "1" BufferedImage : - image
-
-    enum ImageType {
-        SINGLE
-        ZOOM
-        ROTATION
-    }
-}
-
-' ------------------ '
-' Fractal Generation '
-' ------------------ '
-
-package generator {
-    interface IFractalGenerator {
-        + {abstract} generateImage() : IFractalImage
-        + {abstract} computePixelColor(row : int, column : int) : Color
-        + {abstract} saveImage() : void
-    }
-
-    class FractalGenerator {
-        - nbMaxIteration : int {readOnly}
-        - filePath : String {readOnly}
-        - sequenceBiFunction : BiFunction<IComplex, Integer, IComplexSequence>
-        ~ FractalGenerator(builder : FractalGeneratorBuilder)
-    }
-
-    class CompositeFractalGenerator {
-        - delay : int {readOnly}
-        - outputFile : String {readOnly}
-        - images : List<BufferedImage> {readOnly}
-        + CompositeFractalGenerator(generators : List<IFractalGenerator>, delay : int, outputFile : String)
-    }
-
-    class FractalGeneratorBuilder {
-        - sequenceFactory : BiFunction<IComplex, Integer, IComplexSequence>
-        - width : int
-        - height : int
-        - zoom : double
-        - maxIterations : int
-        - outputFile : String
-        - frameCount : int
-        - zoomFactor : double
-        - frameDelay : int
-        - rotationStep : double
-        - center : IComplex
-        - rotationConstant : IComplex
-        + FractalGeneratorBuilder()
-        + usingSequence(factory : BiFunction<IComplex, Integer, IComplexSequence>) : FractalGeneratorBuilder
-        + usingSequence(type : ComplexSequenceType) : FractalGeneratorBuilder
-        + withSize(width : int, height : int) : FractalGeneratorBuilder
-        + zoomedBy(zoom : double) : FractalGeneratorBuilder
-        + centeredAt(center : IComplex) : FractalGeneratorBuilder
-        + withMaxIterations(maxIterations : int) : FractalGeneratorBuilder
-        + coloredWith(palette : IPalette) : FractalGeneratorBuilder
-        + coloredWith(type : PaletteType) : FractalGeneratorBuilder
-        + savedAs(outputFile : String) : FractalGeneratorBuilder
-        + animatedWithZoom(factor : double, frames : int) : FractalGeneratorBuilder
-        + animatedWithRotation(constant : IComplex, step : double, frames : int) : FractalGeneratorBuilder
-        + withFrameDelay(delay : int) : FractalGeneratorBuilder
-        + getImage() : IFractalImage
-        + getPlane() : IComplexPlane
-        + getMaxIterations() : int
-        + getPalette() : IPalette
-        + getOutputFile() : String
-        + getSequenceFactory() : BiFunction<IComplex, Integer, IComplexSequence>
-        + build() : IFractalGenerator
-        ~ zoomForFrame(initialZoom : double, k : int) : double
-        ~ sequenceForFrame(initialSequence : BiFunction<IComplex, Integer, IComplexSequence>, k : int) : BiFunction<IComplex, Integer, IComplexSequence>
-    }
-
-    FractalGenerator ..|> IFractalGenerator
-    CompositeFractalGenerator ..|> IFractalGenerator
-    CompositeFractalGenerator o--> "*" IFractalGenerator : - generators
-    FractalGeneratorBuilder ..> FractalGenerator : << creates >>
-    FractalGeneratorBuilder ..> CompositeFractalGenerator : << creates >>
-}
-
-' ---------------------- '
-' Command-Line Interface '
-' ---------------------- '
-
-package application {
-    class Main {
-        + {static} main(args : String[]) : void
-    }
-
-    class FractaLensCommand {
-        - fractalName : ComplexSequenceType
-        - nbIterations : int
-        - height : int
-        - width : int
-        - scale : double
-        - focusX : double
-        - focusY : double
-        - paletteName : PaletteType
-        - type : ImageType
-        - imageCount : int
-        - zoomFactor : double
-        - delay : int
-        - cReal : double
-        - cImaginary : double
-        - output : String
-        - helpRequested : boolean
-        + call() : Integer
-    }
-
-    interface "Callable<Integer>" as Callable
-
-    class ContestAnimations << (U,#9999FF) utility >> {
-        - {static} ZOOM_SIZE : int
-        - {static} ROTATION_SIZE : int
-        - {static} ROTATION_FRAMES : int
-        + {static} main(args : String[]) : void
-        - {static} juliaRotation(output : String) : void
-        - {static} infiniteZoom(output : String) : void
-        - {static} generalizedBurningShipRotation(output : String) : void
-        - {static} rotatedConstant(modulus : double, frame : int) : IComplex
-        - {static} duskPalette() : IPalette
-    }
-
-    ContestAnimations ..> FractalGeneratorBuilder : << configures >>
-    ContestAnimations ..> CompositeFractalGenerator : << creates >>
-
-    FractaLensCommand ..|> Callable
-    Main ..> FractaLensCommand : << runs >>
-    FractaLensCommand ..> FractalGeneratorBuilder : << configures >>
-    FractaLensCommand ..> ImageType
-}
-
-' ------------------------------ '
-' Links between the packages     '
-' ------------------------------ '
-
-FractalGenerator --> "1" IFractalImage : - image
-FractalGenerator --> "1" IComplexPlane : - plane
-FractalGenerator --> "1" IPalette : - palette
-FractalGeneratorBuilder --> "1" IPalette : - palette
-FractalGenerator ..> IComplexSequence : << uses >>
-FractalGeneratorBuilder ..> ComplexSequenceType
-FractalGeneratorBuilder ..> PaletteType
-FractalGeneratorBuilder ..> ZoomDecorator : << creates >>
-FractalGeneratorBuilder ..> TranslationDecorator : << creates >>
-FractalGeneratorBuilder ..> BufferedImageAdapter : << creates >>
-FractaLensCommand ..> ComplexSequenceType : << parses -f >>
-FractaLensCommand ..> PaletteType : << parses -p >>
-```
-
-## Feature list
-
-| Features                                               | Design Pattern(s) (?)                                   | Author(s) |
-|--------------------------------------------------------|---------------------------------------------------------|-----------|
-| Complex number                                         | *(none: immutable value object)*                        | Nathan Salomé |
-| Default complex plane                                  | Structural: Decorator (concrete component)              | Amélia Dufour-Lazrek |
-| Scaled complex plane                                   | Structural: Decorator                                   | Nathan Salomé |
-| Translated complex plane                               | Structural: Decorator                                   | Nathan Salomé |
-| Sequence of complex numbers                            | Behavioral: Strategy                                    | Baptiste Wagée |
-| Iterator over a sequence of complex numbers            | Behavioral: Iterator                                    | Matty Fourmestraux |
-| Julia sequence                                         | Behavioral: Strategy (concrete strategy)                | Baptiste Wagée |
-| Mandelbrot sequence                                    | Behavioral: Strategy, Creational: Static Factory Method | Amélia Dufour-Lazrek |
-| Multijulia sequence                                    | Behavioral: Strategy, Creational: Static Factory Method | Baptiste Wagée |
-| Multibrot sequence                                     | Behavioral: Strategy, Creational: Static Factory Method | Amélia Dufour-Lazrek |
-| Burning Ship sequences                                 | Behavioral: Strategy, Creational: Static Factory Method | Baptiste Wagée |
-| Tricorn sequences                                      | Behavioral: Strategy, Creational: Static Factory Method | Nathan Salomé |
-| Generic sequences                                      | Behavioral: Strategy (lambda expressions)               | Amélia Dufour-Lazrek, Matty Fourmestraux |
-| Enumeration of the sequences                           | *(none: enumeration of strategies)*                     | Nathan Salomé |
-| Color palette                                          | Behavioral: Strategy                                    | Amélia Dufour-Lazrek |
-| Grey scale palette                                     | Behavioral: Strategy (concrete strategy)                | Amélia Dufour-Lazrek |
-| Red/Green/Blue/... scale palette                       | Structural: Decorator                                   | Amélia Dufour-Lazrek |
-| Inverted color palette                                 | Structural: Decorator                                   | Amélia Dufour-Lazrek |
-| Gradient-based color palette                           | Behavioral: Strategy (concrete strategy)                | Baptiste Wagée |
-| Predefined color palette                               | Behavioral: Strategy (concrete strategy)                | Matty Fourmestraux |
-| Enumeration of the palettes                            | *(none: enumeration of strategies)*                     | Amélia Dufour-Lazrek |
-| `BufferedImage` used as an `IFractalImage`             | Structural: Adapter                                     | Baptiste Wagée |
-| Static image generation                                | Behavioral: Strategy (context)                          | Matty Fourmestraux |
-| Scale-based animated image generation                  | Structural: Composite                                   | Nathan Salomé, Baptiste Wagée, Matty Fourmestraux |
-| Rotation-based animated image generation               | Structural: Composite                                   | Nathan Salomé, Amélia Dufour-Lazrek, Baptiste Wagée, Matty Fourmestraux |
-| Configuration of the fractal generator                 | Creational: Builder                                     | Baptiste Wagée, Matty Fourmestraux |
-| Command-line interface                                 | Structural: Facade                                      | Nathan Salomé, Amélia Dufour-Lazrek |
-
-## Quality
-
-- Unit tests: `./gradlew test` (coverage report in `build/reports/jacoco/test/html/index.html`).
-- Static analysis: `./gradlew sonar -Dsonar.token=<your token>`.
-
-## Team
-
-This project has been developed by:
-
-- Nathan Salomé
-- Amélia Dufour-Lazrek
-- Baptiste Wagée
-- Matty Fourmestraux
+- [Nathan Salomé](https://github.com/ZRekso)
+- [Amelia Dufour-Lazrek](https://github.com/am-eli-a)
+- [Baptiste Wagée](https://github.com/baptiste-wagee)
+- [Matty Fourmestraux](https://github.com/Racerevo)
