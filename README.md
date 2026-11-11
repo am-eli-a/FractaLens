@@ -1,6 +1,6 @@
 # FractaLens
 
-Une bibliothèque Java et un outil en ligne de commande pour générer des images de fractales (statiques ou animées) à partir de plusieurs suites complexes et palettes de couleurs.
+Une bibliothèque Java et un outil en ligne de commande pour générer des images de fractales (statiques ou animées) à partir de plusieurs suites complexes et palettes de couleurs, créé pour la SAÉ 3.01 (dev d'application).
 
 ## Démarrage rapide
 
